@@ -1,0 +1,14 @@
+{
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext"],
+    "paths": {
+      "@budget-planner/models": ["../models/src"],
+      "~": ["./src"],
+      "~/*": ["./src/*"]
+    }
+  },
+  "exclude": ["**/*.spec.ts", "**/*.test.ts"]
+}

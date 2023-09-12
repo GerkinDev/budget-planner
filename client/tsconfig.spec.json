@@ -1,0 +1,17 @@
+{
+    "extends": "./tsconfig.src.json",
+    "compilerOptions": {
+        "jsx": "react",
+        "types": ["jest-extended", "jest"],
+        "paths": {
+          "@budget-planner/models": ["../models/src"],
+          "~": ["./src"],
+          "~/*": ["./src/*"],
+          "~tests": ["./__tests__"],
+          "~tests/*": ["./__tests__/*"],
+        }
+    },
+    "exclude": [],
+    "include": ["**/*.spec.ts", "**/*.test.ts"],
+    "references": [{"path": "tsconfig.src.json"}]
+}
