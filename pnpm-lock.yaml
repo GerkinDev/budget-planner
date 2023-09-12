@@ -28,6 +28,9 @@ importers:
       react-native:
         specifier: 0.72.3
         version: 0.72.3(@babel/core@7.20.2)(@babel/preset-env@7.20.2)(react@18.2.0)
+      react-native-swipe-list-view:
+        specifier: ^3.2.9
+        version: 3.2.9(prop-types@15.8.1)(react-native@0.72.3)(react@18.2.0)
     devDependencies:
       '@babel/core':
         specifier: ^7.20.0
@@ -7308,6 +7311,18 @@ packages:
 
   /react-is@18.2.0:
     resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
+
+  /react-native-swipe-list-view@3.2.9(prop-types@15.8.1)(react-native@0.72.3)(react@18.2.0):
+    resolution: {integrity: sha512-SjAEuHc/D6ovp+RjDUhfNmw6NYOntdT7+GFhfMGfP/BSLMuMWynpzJy9GKQeyB8sI78T6Lzip21TVbongOg1Mw==}
+    peerDependencies:
+      prop-types: '>=15.5.0'
+      react: '>=0.14.8'
+      react-native: '>=0.23.1'
+    dependencies:
+      prop-types: 15.8.1
+      react: 18.2.0
+      react-native: 0.72.3(@babel/core@7.20.2)(@babel/preset-env@7.20.2)(react@18.2.0)
+    dev: false
 
   /react-native@0.72.3(@babel/core@7.20.2)(@babel/preset-env@7.20.2)(react@18.2.0):
     resolution: {integrity: sha512-QqISi+JVmCssNP2FlQ4MWhlc4O/I00MRE1/GClvyZ8h/6kdsyk/sOirkYdZqX3+DrJfI3q+OnyMnsyaXIQ/5tQ==}

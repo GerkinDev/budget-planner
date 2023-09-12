@@ -15,7 +15,8 @@
     "ramda": "^0.29.0",
     "react": "18.2.0",
     "react-async": "^10.0.1",
-    "react-native": "0.72.3"
+    "react-native": "0.72.3",
+    "react-native-swipe-list-view": "^3.2.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
