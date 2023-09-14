@@ -1,23 +1,24 @@
-export type Operation = Operation.OneTime | Operation.Recurring;
+export type Operation = Operation.OneTime | Operation.Recurring | Operation.Checkpoint;
 export namespace Operation {
-    export enum EOperationType {
-        OneTime = 'OneTime',
-        Recurring ='Recurring',
-    }
-
     type Base = {
         date: Date;
         amount: number;
         label: string;
-        type: EOperationType
+        type: Type
+    }
+    export enum Type {
+        OneTime = 'OneTime',
+        Recurring ='Recurring',
+        Checkpoint ='Checkpoint',
     }
 
     export type OneTime = Base & {
-        type: EOperationType.OneTime,
+        type: Type.OneTime,
     }
     export type Recurring = Base & {
-        type: EOperationType.Recurring,
-        periodicity: Recurring.Periodicity
+        type: Type.Recurring,
+        periodicity: Recurring.Periodicity;
+        until?: Date
     }
     export namespace Recurring {
         export type Periodicity = {
@@ -25,4 +26,7 @@ export namespace Operation {
             every: number
         }
     }
+    export type Checkpoint = Base & {
+        type: Type.Checkpoint,
+    }    
 }
