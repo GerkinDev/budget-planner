@@ -155,7 +155,7 @@ function OperationsList(): JSX.Element {
   return (
     <SwipeListView
       data={opWithKeys ? [...opWithKeys.entries()] : []}
-      renderItem={({item: [, value], index}) => (
+      renderItem={({item: [, value]}) => (
         <TouchableHighlight
           onPress={() => console.log('You touched me')}
           style={[themeBg, styles.rowFront]}
@@ -199,7 +199,6 @@ function OperationsList(): JSX.Element {
       rightOpenValue={-styles.actionButton.width}
       stopLeftSwipe={styles.actionButton.width}
       stopRightSwipe={-styles.actionButton.width}
-      previewRowKey={'0'}
       previewOpenValue={-40}
       previewOpenDelay={0}
       onRowDidOpen={onItemOpen}
