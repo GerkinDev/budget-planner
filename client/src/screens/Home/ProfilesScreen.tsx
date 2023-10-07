@@ -48,13 +48,13 @@ function ProfilesScreen({
     }, []),
   });
 
-  const [isExtended, setIsExtended] = React.useState(true);
+  const [isFABExtended, setIsFABExtended] = React.useState(true);
 
   const onScroll = ({nativeEvent}: NativeSyntheticEvent<NativeScrollEvent>) => {
     const currentScrollPosition =
       Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
 
-    setIsExtended(currentScrollPosition <= 0);
+    setIsFABExtended(currentScrollPosition <= 0);
   };
   const setFavorite = async (profile: string) => {
     await datastore.preferences.write({
@@ -112,7 +112,7 @@ function ProfilesScreen({
             <AnimatedFAB
               icon={iconWrapper(FontAwesome6Icon, {name: 'plus'})}
               label={'Add'}
-              extended={isExtended}
+              extended={isFABExtended}
               visible={true}
               onPress={() => {
                 navigation.navigate('Home>AddProfile');

@@ -9,56 +9,125 @@ import {
   deleteAsync,
 } from 'expo-file-system';
 import {basename, dirname} from 'path';
-import {Profile} from '@budget-planner/models';
-import {isNil, memoizeWith} from 'ramda';
-import {ReadonlyDeep} from 'type-fest';
+import {Operation, Profile} from '@budget-planner/models';
+import {isNil, memoizeWith, omit} from 'ramda';
+import {ReadonlyDeep, Jsonify} from 'type-fest';
 
 type Preferences = {
   defaultProfileName?: string;
 };
+type Obj = Record<string, unknown>;
 
-const fileRW = memoizeWith(
-  (file: string) => file,
-  <T extends Record<any, unknown>>(file: string) => {
-    let cache: ReadonlyDeep<T> | null = null;
-    return {
-      read: async () => {
-        if (cache) {
-          return cache;
-        }
-        try {
-          const content = await readAsStringAsync(file);
-          if (content) {
-            cache = JSON.parse(content);
-            return cache!;
-          }
-          return false;
-        } catch (e: any) {
-          if (
-            e instanceof Error &&
-            e.message.startsWith(
-              "Call to function 'ExponentFileSystem.readAsStringAsync' has been rejected.\n→ Caused by: java.io.FileNotFoundException",
-            )
-          ) {
-            return false;
-          }
-          return false;
-        }
-      },
-      write: async (value: T) => {
-        assert(typeof value === 'object' && !isNil(value));
-        console.log('WRITE', file, value);
-        await makeDirectoryAsync(dirname(file), {intermediates: true});
-        await writeAsStringAsync(file, JSON.stringify(value));
-        cache = value as ReadonlyDeep<T>;
-      },
-      rm: async () => {
-        await deleteAsync(file, {idempotent: true});
-        cache = null;
-      },
-    };
-  },
-);
+export interface IFileRW<TIn extends Obj = Obj, TOut extends Obj = TIn> {
+  readonly file: string;
+  read(): Promise<ReadonlyDeep<TOut> | false>;
+  write(value: ReadonlyDeep<TIn>): Promise<void>;
+  rm(): Promise<void>;
+}
+export namespace IFileRW {
+  export type In<T extends IFileRW> = T extends IFileRW<infer U> ? U : never;
+  export type Out<T extends IFileRW> = T extends IFileRW<Obj, infer U>
+    ? U
+    : never;
+}
+
+class FileRW<
+  TIn extends Record<string, unknown>,
+  TOut extends Jsonify<TIn> = Jsonify<TIn>,
+> implements IFileRW<TIn, TOut>
+{
+  public static readonly for = memoizeWith(
+    file => file,
+    <
+      _TIn extends Record<string, unknown>,
+      _TOut extends Jsonify<_TIn> = Jsonify<_TIn>,
+    >(
+      file: string,
+    ) => new this<_TIn, _TOut>(file),
+  );
+
+  private _cache: ReadonlyDeep<TOut> | null = null;
+
+  private constructor(public readonly file: string) {}
+
+  async read() {
+    if (this._cache) {
+      return this._cache;
+    }
+    try {
+      const content = await readAsStringAsync(this.file);
+      if (content) {
+        this._cache = JSON.parse(content);
+        return this._cache!;
+      }
+      return false;
+    } catch (e: any) {
+      if (
+        e instanceof Error &&
+        e.message.startsWith(
+          "Call to function 'ExponentFileSystem.readAsStringAsync' has been rejected.\n→ Caused by: java.io.FileNotFoundException",
+        )
+      ) {
+        return false;
+      }
+      return false;
+    }
+  }
+  async write(value: ReadonlyDeep<TIn>) {
+    assert(typeof value === 'object' && !isNil(value));
+    console.log('WRITE', this.file, value);
+    await makeDirectoryAsync(dirname(this.file), {intermediates: true});
+    await writeAsStringAsync(this.file, JSON.stringify(value));
+    this._cache = null;
+  }
+  async rm() {
+    await deleteAsync(this.file, {idempotent: true});
+    this._cache = null;
+  }
+}
+
+class CompositeFileRW<Public extends Obj, BaseRW extends IFileRW>
+  implements IFileRW<Public>
+{
+  public static readonly for = memoizeWith(
+    (fileRW, ser, des) =>
+      [fileRW.file, ser.toString(), des.toString()].join('@@'),
+    <_Public extends Obj, _BaseRW extends IFileRW>(
+      baseRW: _BaseRW,
+      serialize: (
+        value: ReadonlyDeep<_Public>,
+      ) => ReadonlyDeep<IFileRW.In<_BaseRW>>,
+      deserialize: (
+        value: ReadonlyDeep<IFileRW.Out<_BaseRW>>,
+      ) => ReadonlyDeep<_Public>,
+    ) => new this(baseRW, serialize, deserialize),
+  );
+  public get file() {
+    return this._baseRW.file;
+  }
+
+  private constructor(
+    private readonly _baseRW: BaseRW,
+    private readonly _serialize: (
+      value: ReadonlyDeep<Public>,
+    ) => ReadonlyDeep<IFileRW.In<BaseRW>>,
+    private readonly _deserialize: (
+      value: ReadonlyDeep<IFileRW.Out<BaseRW>>,
+    ) => ReadonlyDeep<Public>,
+  ) {}
+  async read() {
+    const value = await this._baseRW.read();
+    return value
+      ? this._deserialize(value as ReadonlyDeep<IFileRW.Out<BaseRW>>)
+      : false;
+  }
+  write(value: ReadonlyDeep<Public>): Promise<void> {
+    return this._baseRW.write(this._serialize(value));
+  }
+  rm(): Promise<void> {
+    return this._baseRW.rm();
+  }
+}
 
 const encodeProfileName = (profileName: string) =>
   encodeURIComponent(profileName).replaceAll('.', '%2e');
@@ -70,30 +139,54 @@ export class Datastore {
   private static readonly _PROFILES_DIR = `${documentDirectory}/profiles`;
   public constructor() {}
 
-  public readonly preferences = fileRW<Preferences>(
+  public readonly preferences = FileRW.for<Preferences>(
     Datastore._PREFERENCES_FILE,
   );
 
-  private _resolve(path: string) {
-    return `${Datastore._PROFILES_DIR}/${path}`;
+  private _profile(name: string): FileRW<Omit<Profile, 'name'>> {
+    const fileRw = FileRW.for<Omit<Profile, 'name'>>(
+      `${Datastore._PROFILES_DIR}/${encodeProfileName(name)}.json`,
+    );
+    return fileRw;
   }
-  //   public async loadDefaultProfile(): Promise<Profile> {
-  //     try {
-  //       return await this.loadProfile('DEFAULT');
-  //     } catch (e: unknown) {
-  //       return this.initProfile();
-  //     }
-  //   }
-  //   public async loadProfile(profileName: string): Promise<Profile> {
-  //     assert(profileName.match(/^[a-zA-Z0-9-_]+$/));
-  //     const contentStr = await readAsStringAsync(`${profileName}.json`);
-  //     const profile = JSON.parse(contentStr);
-  //     return {name: 'test', timelines: []};
-  //   }
 
-  //   public initProfile(): Profile {
-  //     return {name: 'test', timelines: []};
-  //   }
+  public profile(name: string): IFileRW<Profile.Current> {
+    const innerRw = this._profile(name);
+    return CompositeFileRW.for<Profile.Current, FileRW<Omit<Profile, 'name'>>>(
+      innerRw,
+      value => {
+        assert(value.name === name);
+        return {...omit(['name'], value), version: 1 as const};
+      },
+      value => {
+        if (value.version === 1) {
+          return {
+            ...value,
+            name,
+            timelines: value.timelines.map(timeline => ({
+              ...timeline,
+              operations: timeline.operations.map(operation => {
+                if (operation.type === Operation.Type.Recurring) {
+                  return {
+                    ...operation,
+                    date: new Date(operation.date),
+                    until: operation.until
+                      ? new Date(operation.until)
+                      : undefined,
+                  };
+                }
+                return {
+                  ...operation,
+                  date: new Date(operation.date),
+                };
+              }),
+            })),
+          };
+        }
+        assert.fail(`Unsupported version ${value.version}`);
+      },
+    );
+  }
 
   public async listProfiles() {
     const infos = await getInfoAsync(Datastore._PROFILES_DIR);
@@ -115,9 +208,7 @@ export class Datastore {
   }
 
   public async saveProfile({name, timelines}: Profile.Current) {
-    const fileRw = fileRW<Omit<Profile, 'name'>>(
-      `${Datastore._PROFILES_DIR}/${encodeProfileName(name)}.json`,
-    );
+    const fileRw = this._profile(name);
     await fileRw.write({timelines: timelines, version: 1});
   }
 

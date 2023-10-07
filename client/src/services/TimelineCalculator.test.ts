@@ -74,8 +74,8 @@ describe('amountAt', () => {
   });
   describe(`${Operation.Type.Recurring} operations`, () => {
     const periodicities = [
-        {every: 2, interval: 'day'},
-        {every: 1, interval: 'day'},
+      {every: 2, interval: 'day'},
+      {every: 1, interval: 'day'},
     ] satisfies Operation.Recurring.Periodicity[];
     describe.each(TEST_DATA_BASE)('Test data %j', testData => {
       const TEST_DATA = testData.map<Operation>((op, i) => ({

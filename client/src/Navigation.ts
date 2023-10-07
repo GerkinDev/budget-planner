@@ -5,7 +5,7 @@ import {
 
 export type RootStackParamsList = {
   Home: undefined;
-  List: undefined;
+  Operations: undefined;
 };
 export type RootStackScreenProps<T extends keyof RootStackParamsList> =
   NativeStackScreenProps<RootStackParamsList, T>;

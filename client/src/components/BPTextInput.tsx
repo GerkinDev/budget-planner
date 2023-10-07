@@ -4,13 +4,13 @@ import React, {
   Ref,
   forwardRef,
   useImperativeHandle,
-  useRef,
   useState,
 } from 'react';
 import {Text, TextInput} from 'react-native-paper';
-import ThemeView from './ThemeView';
 import {useBPForeignInteractionManager} from './BPForeignInteractionManager';
 import {Except} from 'type-fest';
+import {View} from 'react-native';
+import {IValidable, OnValueChanged} from '~/helpers/validation';
 
 enum TouchState {
   Pristine = 'Pristine',
@@ -25,15 +25,12 @@ const BPTextInput = forwardRef(function BPTextInput(
     onChangeText = always(undefined),
     label,
     value: baseValue = '',
-    onFocus,
     ...other
   }: {
     validate?: (text: string) => string[];
-    onChangeText?: (
-      ...args: [valid: true, text: string] | [valid: false, text: null]
-    ) => void;
+    onChangeText?: OnValueChanged<string>;
   } & Except<ComponentProps<typeof TextInput>, 'error' | 'onChangeText'>,
-  ref: Ref<{validate(): boolean}>,
+  ref: Ref<IValidable>,
 ) {
   const [value, setValue] = useState(baseValue);
   const [errors, setErrors] = useState<string[]>([]);
@@ -75,7 +72,7 @@ const BPTextInput = forwardRef(function BPTextInput(
     [TouchState.Editing]: prevErrors,
   }[touchState];
   return (
-    <ThemeView>
+    <View style={[{flexDirection: 'column'}, other.style]}>
       <TextInput
         {...other}
         label={label}
@@ -94,14 +91,20 @@ const BPTextInput = forwardRef(function BPTextInput(
         }}
         onFocus={e => {
           setTouchState(TouchState.Focused);
-          onFocus?.(e);
+          other.onFocus?.(e);
+        }}
+        onBlur={e => {
+          setTouchState(TouchState.Blurred);
+          other.onBlur?.(e);
         }}
         error={shownErrors.length > 0}
       />
       {shownErrors.map(e => (
-        <Text>{e}</Text>
+        <Text style={{maxWidth: '100%'}} key={e}>
+          {e}
+        </Text>
       ))}
-    </ThemeView>
+    </View>
   );
 });
 

@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 function AddProfileScreen({
   navigation,
 }: HomeScreenProps<'Home>AddProfile'>): JSX.Element {
-  const profileInputRef = useRef<ComponentRef<typeof BPTextInput>>(null);
+  const profileInputRef = useRef<IValidable>(null);
   const foreignInteractionManagerRef =
     useRef<ComponentRef<typeof BPForeignInteractionManager>>(null);
   const [name, setName] = React.useState('');

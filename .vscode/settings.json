@@ -1,4 +1,7 @@
 {
     "typescript.tsdk": "node_modules/typescript/lib",
-    "emulator.emulatorPath": "$HOME/Android/Sdk/emulator"
+    "emulator.emulatorPath": "$HOME/Android/Sdk/emulator",
+    "cSpell.words": [
+        "Validable"
+    ]
 }
