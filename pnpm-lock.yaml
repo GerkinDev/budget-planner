@@ -10,6 +10,30 @@ importers:
       '@expo/vector-icons':
         specifier: ^13.0.0
         version: 13.0.0
+      '@formatjs/intl-datetimeformat':
+        specifier: ^6.10.3
+        version: 6.10.3
+      '@formatjs/intl-displaynames':
+        specifier: ^6.5.2
+        version: 6.5.2
+      '@formatjs/intl-getcanonicallocales':
+        specifier: ^2.2.1
+        version: 2.2.1
+      '@formatjs/intl-listformat':
+        specifier: ^7.4.2
+        version: 7.4.2
+      '@formatjs/intl-locale':
+        specifier: ^3.3.4
+        version: 3.3.4
+      '@formatjs/intl-numberformat':
+        specifier: ^8.7.2
+        version: 8.7.2
+      '@formatjs/intl-pluralrules':
+        specifier: ^5.2.6
+        version: 5.2.6
+      '@formatjs/intl-relativetimeformat':
+        specifier: ^11.2.6
+        version: 11.2.6
       '@js-temporal/polyfill':
         specifier: ^0.4.4
         version: 0.4.4
@@ -31,6 +55,9 @@ importers:
       expo-file-system:
         specifier: ^15.4.4
         version: 15.4.4(expo@49.0.13)
+      expo-localization:
+        specifier: ^14.3.0
+        version: 14.3.0(expo@49.0.13)
       expo-splash-screen:
         specifier: ^0.20.5
         version: 0.20.5(expo-modules-autolinking@1.5.1)(expo@49.0.13)
@@ -55,6 +82,12 @@ importers:
       react-native-paper:
         specifier: ^5.10.6
         version: 5.10.6(react-native-safe-area-context@4.6.3)(react-native-vector-icons@10.0.0)(react-native@0.72.5)(react@18.2.0)
+      react-native-paper-dates:
+        specifier: ^0.19.8
+        version: 0.19.8(react-native-paper@5.10.6)(react-native-vector-icons@10.0.0)(react-native@0.72.5)(react@18.2.0)
+      react-native-paper-dropdown:
+        specifier: ^1.0.7
+        version: 1.0.7(@types/react-native@0.70.15)(@types/react@18.2.25)(react-native-paper@5.10.6)(react-native@0.72.5)(react@18.2.0)(typescript@5.2.2)
       react-native-reanimated:
         specifier: ^3.3.0
         version: 3.3.0(@babel/core@7.23.0)(@babel/plugin-proposal-nullish-coalescing-operator@7.18.6)(@babel/plugin-proposal-optional-chaining@7.21.0)(@babel/plugin-transform-arrow-functions@7.22.5)(@babel/plugin-transform-shorthand-properties@7.22.5)(@babel/plugin-transform-template-literals@7.22.5)(react-native@0.72.5)(react@18.2.0)
@@ -1896,6 +1929,88 @@ packages:
       find-up: 5.0.0
       js-yaml: 4.1.0
 
+  /@formatjs/ecma402-abstract@1.17.2:
+    resolution: {integrity: sha512-k2mTh0m+IV1HRdU0xXM617tSQTi53tVR2muvYOsBeYcUgEAyxV1FOC7Qj279th3fBVQ+Dj6muvNJZcHSPNdbKg==}
+    dependencies:
+      '@formatjs/intl-localematcher': 0.4.2
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-datetimeformat@6.10.3:
+    resolution: {integrity: sha512-BNMf20WLjMPhOslasBOVuMrBcV5w7fkDwETRjkCVkC+5K4y6TyWVJTuQ8IiFYjTuZpfhso9iXbc1gwe+Pi6rvg==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.17.2
+      '@formatjs/intl-localematcher': 0.4.2
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-displaynames@6.5.2:
+    resolution: {integrity: sha512-uC2VBlz+WydGTDDpJwMTQuPH3CUpTricr91WH1QMfz5oEHg2sB7mUERcZONE/lu8MOe1jREIx4vBciZEVTqkmA==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.17.2
+      '@formatjs/intl-localematcher': 0.4.2
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-enumerator@1.3.4:
+    resolution: {integrity: sha512-Ad1/Q7Lq69+9l2fPcXVwbQmxfel2kKf0HnfCpcFMaKq7uZAgmh++6Vv+bNsRHIN17EQm/QR2bKbkKgjhbFOQzw==}
+    dependencies:
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-getcanonicallocales@2.2.1:
+    resolution: {integrity: sha512-KooqmyY+Mhq3ioASPzoU6p6Cy9Mx+cWSVQSP6lF+vEW2tiaN90ti08cp82p1dzFschenduOYgPKrNcBpsDi6+g==}
+    dependencies:
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-listformat@7.4.2:
+    resolution: {integrity: sha512-+6bSVudEQkf12Hh7kuKt8Xv/MyFlqdwA4V4NLnTZW8uYdF9RxlOELDD0rPaOc2++TMKIzI5o6XXwHPvpL6VrPA==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.17.2
+      '@formatjs/intl-localematcher': 0.4.2
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-locale@3.3.4:
+    resolution: {integrity: sha512-QRJLqpifdAr0FqkKKX2BFz2Jvjiqn/VY94Lla1EFjjYdSiP/jMiWCcKbjHoW7/y9pOdW9He5WhJKyp8bjAiHdw==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.17.2
+      '@formatjs/intl-enumerator': 1.3.4
+      '@formatjs/intl-getcanonicallocales': 2.2.1
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-localematcher@0.4.2:
+    resolution: {integrity: sha512-BGdtJFmaNJy5An/Zan4OId/yR9Ih1OojFjcduX/xOvq798OgWSyDtd6Qd5jqJXwJs1ipe4Fxu9+cshic5Ox2tA==}
+    dependencies:
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-numberformat@8.7.2:
+    resolution: {integrity: sha512-WOmJ33M6wnWs/ZWATf64lvMNEDeAt+x81AsjEtQY5DCYeenHmaa/WFLbFDxIiEgRuH2LVYYR/Ger4R51FK/nnQ==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.17.2
+      '@formatjs/intl-localematcher': 0.4.2
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-pluralrules@5.2.6:
+    resolution: {integrity: sha512-64i4JvWS1ibw774xnJaNdyIxPzyaO+uGgOtkuS0EbK076f3znEhu1GXh4vmnaCEGb9R3uLwOWU0GjOEbavFzbA==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.17.2
+      '@formatjs/intl-localematcher': 0.4.2
+      tslib: 2.6.2
+    dev: false
+
+  /@formatjs/intl-relativetimeformat@11.2.6:
+    resolution: {integrity: sha512-XuHREcmmbVTUKcHn/IXxwtIT0q4H25dn2jnc559zcPVrNP9+I2XWVoMfOBY41jBPASwineg2PJWJtwliR2ZGqg==}
+    dependencies:
+      '@formatjs/ecma402-abstract': 1.17.2
+      '@formatjs/intl-localematcher': 0.4.2
+      tslib: 2.6.2
+    dev: false
+
   /@gar/promisify@1.1.3:
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
 
@@ -2877,7 +2992,6 @@ packages:
 
   /@types/prop-types@15.7.8:
     resolution: {integrity: sha512-kMpQpfZKSCBqltAJwskgePRaYRFukDkm1oItcAbC3gNELR20XIBcN9VRgg4+m8DKsTfkWeA4m4Imp4DDuWy7FQ==}
-    dev: true
 
   /@types/ramda@0.29.6:
     resolution: {integrity: sha512-4XQ9hYQhCwOxfkoTsIPvDVXc75fY5+MLQHUpExX6ByvU1q+0vOYRLSjWAt1IydkE1hOuhwMH6KvV/9rhzgrvRw==}
@@ -2896,7 +3010,6 @@ packages:
     resolution: {integrity: sha512-wHrMQd65odOFbejFSDF7riocwLGEjkoJCF3GhH2a1vKqWbCExH361AZa/1GMG8gijAP86hkjF9gHZFHepEXaZA==}
     dependencies:
       '@types/react': 18.2.25
-    dev: true
 
   /@types/react-test-renderer@18.0.3:
     resolution: {integrity: sha512-4wcNLnY6nIT+L6g94CpzL4CXX2P18JvKPU9CDlaHr3DnbP3GiaQLhDotJqjWlVqOcE4UhLRjp0MtxqwuNKONnA==}
@@ -2910,11 +3023,9 @@ packages:
       '@types/prop-types': 15.7.8
       '@types/scheduler': 0.16.4
       csstype: 3.1.2
-    dev: true
 
   /@types/scheduler@0.16.4:
     resolution: {integrity: sha512-2L9ifAGl7wmXwP4v3pN4p2FLhD0O1qsJpvKmNin5VA8+UvNVb447UDaAEV6UdrkA+m/Xs58U1RFps44x6TFsVQ==}
-    dev: true
 
   /@types/semver@7.5.3:
     resolution: {integrity: sha512-OxepLK9EuNEIPxWNME+C6WwbRAOOI2o2BaQEGzz5Lu2e4Z5eDnEo+/aVEDMIXywoJitJ7xWd641wrGLZdtwRyw==}
@@ -4018,7 +4129,6 @@ packages:
 
   /csstype@3.1.2:
     resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
-    dev: true
 
   /dag-map@1.0.2:
     resolution: {integrity: sha512-+LSAiGFwQ9dRnRdOeaj7g47ZFJcOUPukAP8J3A3fuZ1g9Y44BG+P1sgApjLXTQPOzC4+7S9Wr8kXsfpINM4jpw==}
@@ -4759,6 +4869,15 @@ packages:
       expo: '*'
     dependencies:
       expo: 49.0.13(@babel/core@7.23.0)
+
+  /expo-localization@14.3.0(expo@49.0.13):
+    resolution: {integrity: sha512-TML3TeVtwpfuSNwbhBspC9XsGJaa0TWJNh+UaR/35YP9fQiaJfVWUMSrAq84ba6rY1Pm3kti07LV8UUa505oqg==}
+    peerDependencies:
+      expo: '*'
+    dependencies:
+      expo: 49.0.13(@babel/core@7.23.0)
+      rtl-detect: 1.0.4
+    dev: false
 
   /expo-modules-autolinking@1.5.1:
     resolution: {integrity: sha512-yt5a1VCp2BF9CrsO689PCD5oXKP14MMhnOanQMvDn4BDpURYfzAlDVGC5fZrNQKtwn/eq3bcrxIwZ7D9QjVVRg==}
@@ -7973,6 +8092,39 @@ packages:
       react-native: 0.72.5(@babel/core@7.23.0)(@babel/preset-env@7.22.20)(react@18.2.0)
     dev: false
 
+  /react-native-paper-dates@0.19.8(react-native-paper@5.10.6)(react-native-vector-icons@10.0.0)(react-native@0.72.5)(react@18.2.0):
+    resolution: {integrity: sha512-/z6RvvApOUJjRUKpdpVY/5Mou1zmbg48a9ahOQhyUZlrntDIveaWxZatANDHePaCLl+ySMtH8xlMW5bJALInYw==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+      react-native-paper: '*'
+      react-native-vector-icons: '*'
+    dependencies:
+      color: 3.2.1
+      react: 18.2.0
+      react-native: 0.72.5(@babel/core@7.23.0)(@babel/preset-env@7.22.20)(react@18.2.0)
+      react-native-paper: 5.10.6(react-native-safe-area-context@4.6.3)(react-native-vector-icons@10.0.0)(react-native@0.72.5)(react@18.2.0)
+      react-native-vector-icons: 10.0.0
+    dev: false
+
+  /react-native-paper-dropdown@1.0.7(@types/react-native@0.70.15)(@types/react@18.2.25)(react-native-paper@5.10.6)(react-native@0.72.5)(react@18.2.0)(typescript@5.2.2):
+    resolution: {integrity: sha512-St0rZFw5sC7mbXtFCOGsyEa0fIBaG6Cfz78RsjFNzTj+rKd1i9qlDY2O7eOa2zAUEnFlL+C7FXdXUY9RUNELNw==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-native': '*'
+      react: '*'
+      react-native: '*'
+      react-native-paper: '*'
+      typescript: '*'
+    dependencies:
+      '@types/react': 18.2.25
+      '@types/react-native': 0.70.15
+      react: 18.2.0
+      react-native: 0.72.5(@babel/core@7.23.0)(@babel/preset-env@7.22.20)(react@18.2.0)
+      react-native-paper: 5.10.6(react-native-safe-area-context@4.6.3)(react-native-vector-icons@10.0.0)(react-native@0.72.5)(react@18.2.0)
+      typescript: 5.2.2
+    dev: false
+
   /react-native-paper@5.10.6(react-native-safe-area-context@4.6.3)(react-native-vector-icons@10.0.0)(react-native@0.72.5)(react@18.2.0):
     resolution: {integrity: sha512-n5r2S53/pGpHRyQV/n75W8ibU+VyamMGSqKWGSti9ZmChcgEWC0s4o/TnpUvmAKNZCQwcYwKSLrmMq5wR5nUNA==}
     peerDependencies:
@@ -8359,6 +8511,10 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.3
+
+  /rtl-detect@1.0.4:
+    resolution: {integrity: sha512-EBR4I2VDSSYr7PkBmFy04uhycIpDKp+21p/jARYXlCSjQksTBQcJ0HFUPOO79EPPH5JS6VAhiIQbycf0O3JAxQ==}
+    dev: false
 
   /run-applescript@5.0.0:
     resolution: {integrity: sha512-XcT5rBksx1QdIhlFOCtgZkB99ZEouFZ1E2Kc2LHqNW13U3/74YGdkQRmThTwxy4QIyookibDKYZOPqX//6BlAg==}
@@ -9125,7 +9281,6 @@ packages:
     resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
 
   /ua-parser-js@1.0.36:
     resolution: {integrity: sha512-znuyCIXzl8ciS3+y3fHJI/2OhQIXbXw9MWC/o3qwyR+RGppjZHrM27CGFSKCJXi2Kctiz537iOu2KnXs1lMQhw==}
