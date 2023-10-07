@@ -34,8 +34,15 @@ const fileRW = memoizeWith(
           }
           return false;
         } catch (e: any) {
-          console.error(e, e instanceof Error, e.name);
-          throw e;
+          if (
+            e instanceof Error &&
+            e.message.startsWith(
+              "Call to function 'ExponentFileSystem.readAsStringAsync' has been rejected.\n→ Caused by: java.io.FileNotFoundException",
+            )
+          ) {
+            return false;
+          }
+          return false;
         }
       },
       write: async (value: T) => {

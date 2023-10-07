@@ -20,5 +20,5 @@ module.exports = {
   moduleNameMapper: {
     "^@budget-planner/([^/]*)(.*)": "<rootDir>/../$1/src$2"
   },
-  setupFilesAfterEnv: ['jest-extended/all', "@testing-library/jest-native/extend-expect", 'react-native-gesture-handler/jestSetup.js', '<rootDir>/jest-setup.js']
+  setupFilesAfterEnv: ['jest-extended/all', "@testing-library/jest-native/extend-expect", 'react-native-gesture-handler/jestSetup.js', '<rootDir>/jest.setup.js']
 };

@@ -28,5 +28,5 @@ export namespace Operation {
     }
     export type Checkpoint = Base & {
         type: Type.Checkpoint,
-    }    
+    }
 }

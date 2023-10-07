@@ -94,19 +94,8 @@ function ProfilesScreen({
                           }}
                           // mode="contained-tonal"
                           onPress={() => setFavorite(profile.name)}
-                          icon={iconWrapper(FontAwesome6Icon, {
-                            name: profile.isDefault ? 'star' : 'star-o',
-                          })}
+                          icon={profile.isDefault ? 'star' : 'star-outline'}
                         />
-                      )}
-                      right={({isExpanded}) => (
-                        <ThemeView style={{flexDirection: 'row'}}>
-                          <FontAwesome6Icon
-                            name={isExpanded ? 'chevron-up' : 'chevron-down'}
-                            color="black"
-                            size={20}
-                          />
-                        </ThemeView>
                       )}>
                       <Text>TODO</Text>
                     </List.Accordion>
