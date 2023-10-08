@@ -1,9 +1,8 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import Svg, {Circle, G, Line, Path, Text} from 'react-native-svg';
-import {Dims, GraphData, LEFT_PADDING} from './utils';
+import {Dims, GraphData, GraphDot, LEFT_PADDING} from './utils';
 import {StyleSheet} from 'react-native';
-import {inspect} from 'util';
 
 const styles = StyleSheet.create({
   graphChartContainer: {
@@ -15,11 +14,12 @@ const styles = StyleSheet.create({
 function AmountGraph({
   graphData,
   dimensions,
+  onDotSelected,
 }: {
   graphData: GraphData;
   dimensions: Dims;
+  onDotSelected: (dot: GraphDot) => void;
 }) {
-  console.log(inspect(graphData, {colors: true, depth: 3}));
   return (
     <Animated.View style={styles.graphChartContainer}>
       <Svg width={dimensions.width} height={dimensions.height} stroke="#6231ff">
@@ -65,6 +65,16 @@ function AmountGraph({
               <Path d={graphData.curve!} strokeWidth="2" fill="none" />
               {graphData.dots.map((d, i) => (
                 <Circle key={i} {...d} r={2} fill={'#f00'} />
+              ))}
+              {graphData.dots.map((d, i) => (
+                <Circle
+                  key={i}
+                  {...d}
+                  r={10}
+                  fillOpacity={0}
+                  strokeOpacity={0}
+                  onPress={() => onDotSelected(d)}
+                />
               ))}
             </G>
           </>

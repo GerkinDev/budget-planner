@@ -11,6 +11,7 @@ import AddOperationRecurring, {
 import {IValidable} from '~/helpers/validation';
 import {Except} from 'type-fest';
 import AddOperationOneTime from './OneTime';
+import { SafeAreaView, View } from 'react-native';
 
 const operationTypes = Object.values(Operation.Type);
 function assertOperationType(value: unknown): asserts value is Operation.Type {
@@ -83,7 +84,7 @@ function EditOperation({
     onSubmit(fullOperation);
   };
   return (
-    <>
+    <SafeAreaView style={{width: 'auto'}}>
       <BPTextInput
         ref={labelInputRef}
         label={'Label'}
@@ -168,7 +169,7 @@ function EditOperation({
         onPress={submit}>
         Save
       </Button>
-    </>
+    </SafeAreaView>
   );
 }
 

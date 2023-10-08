@@ -1,14 +1,21 @@
-import {parse} from 'react-native-redash';
-import {curveBasis, line, scaleLinear, scaleTime} from 'd3';
+import {line, scaleLinear, scaleTime} from 'd3';
 import {Dimensions} from 'react-native';
 import {useMemo} from 'react';
 import {IterableElement} from 'type-fest';
 import {toPlainDate} from '~/helpers/date';
 import {Temporal} from '@js-temporal/polyfill';
+import {TimelineCalculator} from '~/services/TimelineCalculator';
+import {inspect} from 'util';
 
 export type DataPoint = {
   date: Date;
   value: number;
+  source: TimelineCalculator.ComputedOperationPoint;
+};
+export type GraphDot = {
+  x: number;
+  y: number;
+  source: TimelineCalculator.ComputedOperationPoint;
 };
 export type Dims = {width: number; height: number};
 
@@ -77,10 +84,10 @@ const _getXScales = (min: Date, max: Date, scaleX: (value: Date) => number) =>
   });
 export const makeGraph = (
   data: DataPoint[],
-  dateRange: [Date, Date] | undefined,
+  dateRange: [Date, Date?] | undefined,
   graphDimensions: Dims,
 ) => {
-  console.log(data);
+  console.log('Graph data', inspect(data, {colors: true}));
   const maxY = Math.max(...data.map(val => val.value), 0);
   const minY = Math.min(...data.map(val => val.value), 0);
   const scaleY = scaleLinear()
@@ -97,7 +104,11 @@ export const makeGraph = (
     .domain([minX, maxX])
     .range([LEFT_PADDING, graphDimensions.width]);
 
-  const dots = data.map(d => ({x: scaleX(d.date), y: scaleY(d.value)}));
+  const dots = data.map<GraphDot>(d => ({
+    x: scaleX(d.date),
+    y: scaleY(d.value),
+    source: d.source,
+  }));
   const curvedLine = line<IterableElement<typeof dots>>()
     .x(d => d.x)
     .y(d => d.y)(dots);

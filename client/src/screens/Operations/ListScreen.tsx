@@ -13,7 +13,7 @@ import ThemeView from '~/components/ThemeView';
 import {RowMap, SwipeListView} from 'react-native-swipe-list-view';
 import {buildThemeStylesheet, useThemeBg} from '~/hooks/useColorScheme';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {Modal, Portal, Text} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import {
   FontAwesome6Icon,
   MaterialCommunityIcon,
@@ -25,6 +25,7 @@ import {TouchableHighlight} from 'react-native-gesture-handler';
 import assert from 'assert';
 import {StyleSheet, View} from 'react-native';
 import type {OperationsScreenProps} from '.';
+import BPModal from '~/components/BPModal';
 
 const styles = StyleSheet.create({
   container: {
@@ -167,7 +168,6 @@ function OperationsListScreen({
   };
 
   const themeStyles = useThemeStylesheets();
-  const containerStyle = {...useThemeBg(), padding: 20} as const;
   const [opWithKeys, setOpWithKeys] = useState<Map<string, Operation>>();
   type OpKvp = Entry<typeof opWithKeys>;
   useEffect(() => {
@@ -193,30 +193,28 @@ function OperationsListScreen({
   };
   return (
     <>
-      <Portal>
-        <Modal
-          visible={visible}
-          onDismiss={hideModal}
-          contentContainerStyle={containerStyle}>
-          <EditOperation
-            edited={editedItem}
-            onSubmit={operation => {
-              console.log('SUBMIT', operation, editedItem);
-              if (editedItem) {
-                const idx = operations.findIndex(op => op === editedItem);
-                console.log(`Was edit for ${idx}`);
-                assert(idx >= 0);
-                const newOps = [...operations];
-                newOps[idx] = operation;
-                onChanged(newOps);
-              } else {
-                onChanged([...operations, operation]);
-              }
-              hideModal();
-            }}
-          />
-        </Modal>
-      </Portal>
+      <BPModal
+        visible={visible}
+        onDismiss={hideModal}
+        contentContainerStyle={{width: '100%'}}>
+        <EditOperation
+          edited={editedItem}
+          onSubmit={operation => {
+            console.log('SUBMIT', operation, editedItem);
+            if (editedItem) {
+              const idx = operations.findIndex(op => op === editedItem);
+              console.log(`Was edit for ${idx}`);
+              assert(idx >= 0);
+              const newOps = [...operations];
+              newOps[idx] = operation;
+              onChanged(newOps);
+            } else {
+              onChanged([...operations, operation]);
+            }
+            hideModal();
+          }}
+        />
+      </BPModal>
       <BPFABContainer
         fab={{
           icon: iconWrapper(FontAwesome6Icon, {name: 'plus'}),
