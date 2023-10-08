@@ -41,11 +41,13 @@ const _expandOperations = (
           operationsPeriodicityRecurrence / op.periodicity.every;
 
         assert(
-          totalOperationsOccurrences >= 0 &&
-            isFinite(totalOperationsOccurrences) &&
+          isFinite(totalOperationsOccurrences) &&
             !isNaN(totalOperationsOccurrences),
           `Invalid count of operation occurrences ${totalOperationsOccurrences}`,
         );
+        if (totalOperationsOccurrences <= 0) {
+          return [];
+        }
 
         return new Array(Math.floor(totalOperationsOccurrences + 1))
           .fill(0)
@@ -111,6 +113,33 @@ const _accumulateOperations = (
       return [...acc, {...newEntry}];
     }, []);
 
+const _computeDataPoints = (
+  operations: ReadonlyDeep<Operation[]>,
+  from?: Date,
+  to?: Date,
+) => {
+  const expandedOperations = _expandOperations(operations, to);
+  const operationsSourceMap = new WeakMap(
+    expandedOperations.map(({result, source}) => [result, source] as const),
+  );
+  const accumulatedOperations = _accumulateOperations(
+    expandedOperations.map(op => op.result),
+  );
+  const ops = accumulatedOperations.map(accumulated => ({
+    ...accumulated,
+    operations: accumulated.operations.map(
+      op =>
+        operationsSourceMap.get(op) ??
+        assert.fail(`Could not get source for operation ${op.label}`),
+    ),
+  }));
+  if (from) {
+    const fromCode = getDateCode(from);
+    return ops.filter(op => op.code >= fromCode);
+  }
+  return ops;
+};
+
 export class TimelineCalculator {
   public static for(operations: ReadonlyDeep<Operation[]>) {
     return new this(operations);
@@ -120,21 +149,7 @@ export class TimelineCalculator {
   private _computedDataPoints?: readonly DP[];
   public get computedDataPoints() {
     if (!this._computedDataPoints) {
-      const expandedOperations = _expandOperations(this.operations);
-      const operationsSourceMap = new WeakMap(
-        expandedOperations.map(({result, source}) => [result, source] as const),
-      );
-      const accumulatedOperations = _accumulateOperations(
-        expandedOperations.map(op => op.result),
-      );
-      this._computedDataPoints = accumulatedOperations.map(accumulated => ({
-        ...accumulated,
-        operations: accumulated.operations.map(
-          op =>
-            operationsSourceMap.get(op) ??
-            assert.fail(`Could not get source for operation ${op.label}`),
-        ),
-      }));
+      this._computedDataPoints = _computeDataPoints(this.operations);
     }
     return this._computedDataPoints;
   }
@@ -143,6 +158,13 @@ export class TimelineCalculator {
     this.operations = operations
       .slice()
       .sort(sortUsing(({date}) => date.getTime()));
+  }
+
+  public forRange(from?: Date, to?: Date) {
+    if (!from && !to) {
+      return this.computedDataPoints;
+    }
+    return _computeDataPoints(this.operations, from, to);
   }
 
   public rangeAt(

@@ -10,7 +10,6 @@ import {
   IfRejected,
   useAsync,
 } from 'react-async';
-import {SafeAreaView} from 'react-native';
 import {Text} from 'react-native-paper';
 import type {RootStackParamsList, RootStackScreenProps} from '~/Navigation';
 import {Datastore} from '~/services/Datastore';
@@ -57,7 +56,7 @@ function WrapWithLoader({
     | React.ReactNode;
 }) {
   return (
-    <SafeAreaView>
+    <>
       <IfPending state={operationsPromise}>
         <Text>Loading</Text>
       </IfPending>
@@ -72,7 +71,7 @@ function WrapWithLoader({
             : children;
         }}
       </IfFulfilled>
-    </SafeAreaView>
+    </>
   );
 }
 

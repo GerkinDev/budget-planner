@@ -16,25 +16,49 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import OperationsScreen from './screens/Operations';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
-// const loadProfile = () => new Datastore().loadDefaultProfile()
-
 const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
 
 const initialNavigation = {
   stale: false,
   type: 'stack',
-  key: 'stack-JzoVkMiKiov4ynbSgHdCO',
+  key: 'stack-hexTK_mmoMS1nYwVDs5GO',
   index: 0,
-  routeNames: ['Home', 'Operations'],
-  history: [
+  routeNames: ['Operations', 'Home'],
+  routes: [
     {
-      type: 'route',
-      key: 'Operations-UnWBKmidjKYXQa1atbDn6',
+      key: 'Operations-YNPaCVyABm522yNXUtwkp',
+      name: 'Operations',
+      state: {
+        stale: false,
+        type: 'tab',
+        key: 'tab-OSKhNn-aKrz5j8McVt95c',
+        index: 1,
+        routeNames: ['Operations>List', 'Operations>Graph'],
+        history: [
+          {
+            type: 'route',
+            key: 'Operations>List-QDHgP7EEbZZopKUAh2sVJ',
+          },
+          {
+            type: 'route',
+            key: 'Operations>Graph-LC0EZfZ3EHSTWwWri2c54',
+          },
+        ],
+        routes: [
+          {
+            name: 'Operations>List',
+            key: 'Operations>List-QDHgP7EEbZZopKUAh2sVJ',
+          },
+          {
+            name: 'Operations>Graph',
+            key: 'Operations>Graph-LC0EZfZ3EHSTWwWri2c54',
+          },
+        ],
+      },
     },
   ],
-  routes: [],
 } satisfies NavigationState<RootStackParamsList>;
-const SWITCH_TO_WIP_SCREEN = false;
+const SWITCH_TO_WIP_SCREEN = true;
 
 function App(): JSX.Element {
   // const profileState = useAsync(loadProfile);

@@ -1,4 +1,18 @@
 const { defaults: tsjPreset } = require('ts-jest/presets')
+const {escapeRegExp} = require('ramda-adjunct')
+
+const esmModules = [
+  /(jest-)?react-native/,
+  /@react-native(-community)?/,
+  /expo-[^\/]*/,
+  '@budget-planner',
+  /react-native-(redash|reanimated)/,
+  /d3(-(array|axis|brush|chord|color|contour|delaunay|dispatch|drag|dsv|ease|fetch|force|format|geo|hierarchy|interpolate|path|polygon|quadtree|random|scale-chromatic|scale|selection|shape|time-format|time|timer|transition|zoom))?/,
+  'internmap',
+  'delaunator',
+  'robust-predicates',
+]
+const esmModulesStr = esmModules.map(mod => typeof mod === 'string' ? escapeRegExp(mod) : mod.source).join('|')
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
@@ -6,10 +20,10 @@ module.exports = {
   displayName: 'Client',
   preset: 'react-native',
   transformIgnorePatterns: [
-    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/|expo-modules-core/|expo-file-system/|@budget-planner/)',
+    `node_modules/(?!(${esmModulesStr})/)`,
   ],
   transform: {
-    '^.+\\.jsx$': 'babel-jest',
+    '^.+\\.jsx?$': 'babel-jest',
     '^.+\\.tsx?$': [
       'ts-jest',
       {
