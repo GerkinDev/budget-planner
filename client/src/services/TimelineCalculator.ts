@@ -73,45 +73,50 @@ const _expandOperations = (
 const _accumulateOperations = (
   operations: ReadonlyDeep<Operation.Checkpoint | Operation.OneTime>[],
 ) =>
-  operations.reduce<
-    Spread<
-      DP,
-      {operations: ReadonlyDeep<Operation.Checkpoint | Operation.OneTime>[]}
-    >[]
-  >((acc, op) => {
-    const prev = acc.at(-1);
-    const newEntry =
-      op.type === Operation.Type.Checkpoint
-        ? {
-            actual: op.amount,
-            expected: prev?.expected ?? 0,
-            date: op.date,
-            operations: [op],
-          }
-        : {
-            expected: (prev?.actual ?? prev?.expected ?? 0) + op.amount,
-            date: op.date,
-            operations: [op],
-          };
-    if (newEntry.date.getTime() === prev?.date.getTime()) {
-      return [
-        ...acc.slice(0, -1),
-        {
-          ...prev,
-          ...newEntry,
-          operations: [...newEntry.operations, ...prev.operations],
-        },
-      ];
-    }
-    return [...acc, {...newEntry, code: getDateCode(newEntry.date)}];
-  }, []);
+  operations
+    .map(op => ({operation: op, code: getDateCode(op.date)}))
+    .reduce<
+      Spread<
+        DP,
+        {operations: ReadonlyDeep<Operation.Checkpoint | Operation.OneTime>[]}
+      >[]
+    >((acc, {operation, code}) => {
+      const prev = acc.at(-1);
+      const newEntry =
+        operation.type === Operation.Type.Checkpoint
+          ? {
+              actual: operation.amount,
+              expected: prev?.expected ?? 0,
+              date: operation.date,
+              operations: [operation],
+              code: code,
+            }
+          : {
+              expected:
+                (prev?.actual ?? prev?.expected ?? 0) + operation.amount,
+              date: operation.date,
+              operations: [operation],
+              code: code,
+            };
+      if (newEntry.code === prev?.code) {
+        return [
+          ...acc.slice(0, -1),
+          {
+            ...prev,
+            ...newEntry,
+            operations: [...newEntry.operations, ...prev.operations],
+          },
+        ];
+      }
+      return [...acc, {...newEntry}];
+    }, []);
 
 export class TimelineCalculator {
-  public static for(operations: Operation[]) {
+  public static for(operations: ReadonlyDeep<Operation[]>) {
     return new this(operations);
   }
 
-  public readonly operations: readonly ReadonlyDeep<Operation>[];
+  public readonly operations: ReadonlyDeep<Operation[]>;
   private _computedDataPoints?: readonly DP[];
   public get computedDataPoints() {
     if (!this._computedDataPoints) {
