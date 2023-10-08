@@ -8,9 +8,11 @@ import {
   StyleSheet,
 } from 'react-native';
 import {Text, List, Surface, AnimatedFAB, IconButton} from 'react-native-paper';
+
 import {FontAwesome6Icon, iconWrapper} from '~/components/Icons';
 import ThemeView from '~/components/ThemeView';
 import {Datastore} from '~/services/Datastore';
+
 import type {HomeScreenProps} from './Drawer';
 
 const datastore = new Datastore();
@@ -43,7 +45,7 @@ function ProfilesScreen({
 }: HomeScreenProps<'Home>Profiles'>): JSX.Element {
   const profilesLoading = useAsync({
     promiseFn: useCallback(() => {
-      console.log('List profiles')
+      console.log('List profiles');
       return datastore.listProfiles();
     }, []),
   });

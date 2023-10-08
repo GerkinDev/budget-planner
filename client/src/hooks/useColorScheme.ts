@@ -1,6 +1,5 @@
 import {
   ImageStyle,
-  StyleProp,
   StyleSheet,
   TextStyle,
   ViewStyle,

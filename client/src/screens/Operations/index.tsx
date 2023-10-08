@@ -1,6 +1,13 @@
-import React from 'react';
 import assert from 'assert';
-import {useCallback, useState} from 'react';
+import {inspect} from 'util';
+
+import {Operation, Profile} from '@budget-planner/models';
+import {
+  createBottomTabNavigator,
+  BottomTabScreenProps,
+} from '@react-navigation/bottom-tabs';
+import {CompositeScreenProps} from '@react-navigation/native';
+import React, {useCallback, useState} from 'react';
 import {
   AbstractState,
   AsyncFulfilled,
@@ -11,19 +18,14 @@ import {
   useAsync,
 } from 'react-async';
 import {Text} from 'react-native-paper';
+import {ReadonlyDeep} from 'type-fest';
+
+import {MaterialCommunityIcon, iconWrapper} from '~/components/Icons';
 import type {RootStackParamsList, RootStackScreenProps} from '~/Navigation';
 import {Datastore} from '~/services/Datastore';
-import OperationsListScreen from './ListScreen';
-import {ReadonlyDeep} from 'type-fest';
-import {inspect} from 'util';
-import {Operation, Profile} from '@budget-planner/models';
-import {CompositeScreenProps} from '@react-navigation/native';
-import {
-  createBottomTabNavigator,
-  BottomTabScreenProps,
-} from '@react-navigation/bottom-tabs';
+
 import OperationsGraphScreen from './GraphScreen';
-import {MaterialCommunityIcon, iconWrapper} from '~/components/Icons';
+import OperationsListScreen from './ListScreen';
 
 const datastore = new Datastore();
 

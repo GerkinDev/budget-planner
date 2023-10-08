@@ -1,15 +1,17 @@
-import React from 'react';
 import {
   DrawerScreenProps,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
+import {CompositeScreenProps} from '@react-navigation/native';
+import React from 'react';
 import {TouchableOpacity} from 'react-native';
+
 import {FontAwesome6Icon} from '~/components/Icons';
+import type {RootStackParamsList, RootStackScreenProps} from '~/Navigation';
+
 import AddProfileScreen from './AddProfileScreen';
 import HomeScreen from './HomeScreen';
 import ProfilesScreen from './ProfilesScreen';
-import type {RootStackParamsList, RootStackScreenProps} from '~/Navigation';
-import {CompositeScreenProps} from '@react-navigation/native';
 
 type HomeParamsList = {
   'Home>Home': undefined;

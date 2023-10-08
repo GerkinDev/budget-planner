@@ -1,7 +1,9 @@
+import assert from 'assert';
+
 import {Operation} from '@budget-planner/models';
 import {Temporal, toTemporalInstant} from '@js-temporal/polyfill';
-import assert from 'assert';
 import {ReadonlyDeep, Spread} from 'type-fest';
+
 import {sortUsing} from '../helpers/functional';
 
 type DP = TimelineCalculator.ComputedOperationPoint;

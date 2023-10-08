@@ -1,4 +1,7 @@
 import assert from 'assert';
+import {basename, dirname} from 'path';
+
+import {Operation, Profile} from '@budget-planner/models';
 import {
   documentDirectory,
   getInfoAsync,
@@ -8,12 +11,11 @@ import {
   writeAsStringAsync,
   deleteAsync,
 } from 'expo-file-system';
-import {basename, dirname} from 'path';
-import {Operation, Profile} from '@budget-planner/models';
 import {isNil, memoizeWith, omit} from 'ramda';
 import {ReadonlyDeep, Jsonify} from 'type-fest';
-import {sortUsing} from '~/helpers/functional';
+
 import {roundDate} from '~/helpers/date';
+import {sortUsing} from '~/helpers/functional';
 
 type Preferences = {
   defaultProfileName?: string;

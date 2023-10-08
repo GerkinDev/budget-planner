@@ -1,5 +1,7 @@
 import assert from 'assert';
+
 import {Ref, useEffect, useImperativeHandle} from 'react';
+
 import {IValidable, OnValueChanged} from '~/helpers/validation';
 
 export const useSubFormRef = (
@@ -21,6 +23,7 @@ export const useSubFormRef = (
         },
       };
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     subfields,
   );
 };
@@ -42,4 +45,5 @@ export const useEmitOnChanged = <T>(
       }
     }
     assert.fail('UNSUPPORTED');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, props);

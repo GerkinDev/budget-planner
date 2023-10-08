@@ -1,31 +1,27 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React, {ComponentProps, useEffect, useState} from 'react';
+import assert from 'assert';
 
 import {Operation} from '@budget-planner/models';
-import {Entry, ReadonlyDeep} from 'type-fest';
-import ThemeView from '~/components/ThemeView';
-import {RowMap, SwipeListView} from 'react-native-swipe-list-view';
-import {buildThemeStylesheet, useThemeBg} from '~/hooks/useColorScheme';
+import React, {ComponentProps, useEffect, useState} from 'react';
+
+import {StyleSheet, View} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {TouchableHighlight} from 'react-native-gesture-handler';
 import {Text} from 'react-native-paper';
+import {RowMap, SwipeListView} from 'react-native-swipe-list-view';
+import {Entry, ReadonlyDeep} from 'type-fest';
+
+import BPFABContainer from '~/components/BPFABContainer';
+import BPModal from '~/components/BPModal';
 import {
   FontAwesome6Icon,
   MaterialCommunityIcon,
   iconWrapper,
 } from '~/components/Icons';
-import BPFABContainer from '~/components/BPFABContainer';
-import EditOperation from './components/EditOperation';
-import {TouchableHighlight} from 'react-native-gesture-handler';
-import assert from 'assert';
-import {StyleSheet, View} from 'react-native';
+import ThemeView from '~/components/ThemeView';
+import {buildThemeStylesheet, useThemeBg} from '~/hooks/useColorScheme';
+
 import type {OperationsScreenProps} from '.';
-import BPModal from '~/components/BPModal';
+import EditOperation from './components/EditOperation';
 
 const styles = StyleSheet.create({
   container: {

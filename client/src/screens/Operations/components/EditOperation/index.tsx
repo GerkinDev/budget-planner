@@ -1,17 +1,20 @@
-import React, {useRef, useState} from 'react';
-import {Operation} from '@budget-planner/models';
-import {Button, SegmentedButtons, Text} from 'react-native-paper';
 import assert from 'assert';
+
+import {Operation} from '@budget-planner/models';
+import {mapObjIndexed, omit} from 'ramda';
+import React, {useRef, useState} from 'react';
+import {SafeAreaView} from 'react-native';
+import {Button, SegmentedButtons, Text} from 'react-native-paper';
+import {Except} from 'type-fest';
+
 import BPTextInput from '~/components/BPTextInput';
 import {FontAwesome6Icon, iconWrapper} from '~/components/Icons';
-import {mapObjIndexed, omit} from 'ramda';
+import {IValidable} from '~/helpers/validation';
+
+import AddOperationOneTime from './OneTime';
 import AddOperationRecurring, {
   assertOperationRecurringProps,
 } from './Recurring';
-import {IValidable} from '~/helpers/validation';
-import {Except} from 'type-fest';
-import AddOperationOneTime from './OneTime';
-import { SafeAreaView, View } from 'react-native';
 
 const operationTypes = Object.values(Operation.Type);
 function assertOperationType(value: unknown): asserts value is Operation.Type {

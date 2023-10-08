@@ -1,11 +1,13 @@
-import {line, scaleLinear, scaleTime} from 'd3';
-import {Dimensions} from 'react-native';
-import {useMemo} from 'react';
-import {IterableElement} from 'type-fest';
-import {toPlainDate} from '~/helpers/date';
-import {Temporal} from '@js-temporal/polyfill';
-import {TimelineCalculator} from '~/services/TimelineCalculator';
 import {inspect} from 'util';
+
+import {Temporal} from '@js-temporal/polyfill';
+import {line, scaleLinear, scaleTime} from 'd3';
+import {useMemo} from 'react';
+import {Dimensions} from 'react-native';
+import {IterableElement} from 'type-fest';
+
+import {toPlainDate} from '~/helpers/date';
+import {TimelineCalculator} from '~/services/TimelineCalculator';
 
 export type DataPoint = {
   date: Date;

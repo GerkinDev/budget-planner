@@ -5,16 +5,16 @@
  * @format
  */
 
-import React, {useEffect, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {NavigationContainer, NavigationState} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
+import {Linking, Platform} from 'react-native';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {ActivityIndicator, PaperProvider} from 'react-native-paper';
 
 import {RootStackParamsList, Stack} from './Navigation';
-import {ActivityIndicator, PaperProvider} from 'react-native-paper';
 import {HomeDrawer} from './screens/Home/Drawer';
-import {Linking, Platform} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import OperationsScreen from './screens/Operations';
-import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 const PERSISTENCE_KEY = 'NAVIGATION_STATE_V1';
 

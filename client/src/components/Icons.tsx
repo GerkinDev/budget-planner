@@ -9,4 +9,3 @@ export const iconWrapper =
   (props: Partial<ComponentProps<T>>) => (
     <Icon {...({...baseProps, ...props} as any)} />
   );
-

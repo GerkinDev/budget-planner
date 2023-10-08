@@ -6,11 +6,13 @@ import React, {
   useImperativeHandle,
   useState,
 } from 'react';
-import {Text, TextInput} from 'react-native-paper';
-import {useBPForeignInteractionManager} from './BPForeignInteractionManager';
-import {Except} from 'type-fest';
 import {View} from 'react-native';
+import {Text, TextInput} from 'react-native-paper';
+import {Except} from 'type-fest';
+
 import {IValidable, OnValueChanged} from '~/helpers/validation';
+
+import {useBPForeignInteractionManager} from './BPForeignInteractionManager';
 
 enum TouchState {
   Pristine = 'Pristine',

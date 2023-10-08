@@ -1,8 +1,9 @@
 import React from 'react';
+import {StyleSheet} from 'react-native';
 import Animated from 'react-native-reanimated';
 import Svg, {Circle, G, Line, Path, Text} from 'react-native-svg';
+
 import {Dims, GraphData, GraphDot, LEFT_PADDING} from './utils';
-import {StyleSheet} from 'react-native';
 
 const styles = StyleSheet.create({
   graphChartContainer: {

@@ -1,7 +1,8 @@
 import {Operation} from '@budget-planner/models';
-import {TimelineCalculator} from './TimelineCalculator';
-import {Except} from 'type-fest';
 import {omit} from 'ramda';
+import {Except} from 'type-fest';
+
+import {TimelineCalculator} from './TimelineCalculator';
 
 const _baseDate = new Date('2000-01-01');
 const d: {

@@ -1,5 +1,6 @@
 import React, {ComponentProps} from 'react';
 import {Modal, Portal} from 'react-native-paper';
+
 import {useThemeBg} from '~/hooks/useColorScheme';
 
 function BPModal(props: ComponentProps<typeof Modal>) {

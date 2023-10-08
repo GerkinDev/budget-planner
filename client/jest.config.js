@@ -1,27 +1,27 @@
-const { defaults: tsjPreset } = require('ts-jest/presets')
-const {escapeRegExp} = require('ramda-adjunct')
+const {escapeRegExp} = require('ramda-adjunct');
+const {defaults: tsjPreset} = require('ts-jest/presets');
 
 const esmModules = [
   /(jest-)?react-native/,
   /@react-native(-community)?/,
-  /expo-[^\/]*/,
+  /expo-[^/]*/,
   '@budget-planner',
   /react-native-(redash|reanimated)/,
   /d3(-(array|axis|brush|chord|color|contour|delaunay|dispatch|drag|dsv|ease|fetch|force|format|geo|hierarchy|interpolate|path|polygon|quadtree|random|scale-chromatic|scale|selection|shape|time-format|time|timer|transition|zoom))?/,
   'internmap',
   'delaunator',
   'robust-predicates',
-]
-const esmModulesStr = esmModules.map(mod => typeof mod === 'string' ? escapeRegExp(mod) : mod.source).join('|')
+];
+const esmModulesStr = esmModules
+  .map(mod => (typeof mod === 'string' ? escapeRegExp(mod) : mod.source))
+  .join('|');
 
 /** @type {import('@jest/types').Config.InitialOptions} */
 module.exports = {
   ...tsjPreset,
   displayName: 'Client',
   preset: 'react-native',
-  transformIgnorePatterns: [
-    `node_modules/(?!(${esmModulesStr})/)`,
-  ],
+  transformIgnorePatterns: [`node_modules/(?!(${esmModulesStr})/)`],
   transform: {
     '^.+\\.jsx?$': 'babel-jest',
     '^.+\\.tsx?$': [
@@ -32,8 +32,13 @@ module.exports = {
     ],
   },
   moduleNameMapper: {
-    "^@budget-planner/([^/]*)(.*)": "<rootDir>/../$1/src$2",
-    "~/(.*)": "<rootDir>/src/$1"
+    '^@budget-planner/([^/]*)(.*)': '<rootDir>/../$1/src$2',
+    '~/(.*)': '<rootDir>/src/$1',
   },
-  setupFilesAfterEnv: ['jest-extended/all', "@testing-library/jest-native/extend-expect", 'react-native-gesture-handler/jestSetup.js', '<rootDir>/jest.setup.js']
+  setupFilesAfterEnv: [
+    'jest-extended/all',
+    '@testing-library/jest-native/extend-expect',
+    'react-native-gesture-handler/jestSetup.js',
+    '<rootDir>/jest.setup.js',
+  ],
 };

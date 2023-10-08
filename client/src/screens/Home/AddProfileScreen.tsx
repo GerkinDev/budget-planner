@@ -1,17 +1,13 @@
-import React, {ComponentRef, RefAttributes, useRef} from 'react';
+import React, {ComponentRef, useRef} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import {
-  ActivityIndicator,
-  Button,
-  Switch,
-  Text,
-  TextInput,
-} from 'react-native-paper';
-import BPTextInput from '~/components/BPTextInput';
+import {ActivityIndicator, Button, Switch, Text} from 'react-native-paper';
+
 import BPForeignInteractionManager from '~/components/BPForeignInteractionManager';
+import BPTextInput from '~/components/BPTextInput';
 import {FontAwesome6Icon} from '~/components/Icons';
 import ThemeView from '~/components/ThemeView';
 import {Datastore} from '~/services/Datastore';
+
 import type {HomeScreenProps} from './Drawer';
 
 const styles = StyleSheet.create({

@@ -1,15 +1,18 @@
-import React, {Ref, forwardRef, useRef, useState} from 'react';
-import {Operation} from '@budget-planner/models';
-import BPTextInput from '~/components/BPTextInput';
-import DropDown from 'react-native-paper-dropdown';
-import {View} from 'react-native';
-import {IValidable, OnValueChanged} from '~/helpers/validation';
 import assert from 'assert';
-import {useEmitOnChanged, useSubFormRef} from '../../../../hooks/subFormRef';
-import type {PerTypeOperationProps} from '.';
+
+import {Operation} from '@budget-planner/models';
+import React, {Ref, forwardRef, useRef, useState} from 'react';
+import {View} from 'react-native';
 import {Button} from 'react-native-paper';
 import {DatePickerModal} from 'react-native-paper-dates/lib/module/Date/DatePickerModal';
+import DropDown from 'react-native-paper-dropdown';
+
+import BPTextInput from '~/components/BPTextInput';
 import {roundDate, toPlainDateString} from '~/helpers/date';
+import {IValidable, OnValueChanged} from '~/helpers/validation';
+
+import type {PerTypeOperationProps} from '.';
+import {useEmitOnChanged, useSubFormRef} from '../../../../hooks/subFormRef';
 
 const recurringIntervals = [
   {

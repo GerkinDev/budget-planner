@@ -1,7 +1,7 @@
-import React from 'react';
-import {PropsWithChildren} from 'react';
+import React, {PropsWithChildren} from 'react';
 import {StyleProp, View, ViewStyle} from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
+
 import {useColorScheme} from '../hooks/useColorScheme';
 
 function ThemeView({

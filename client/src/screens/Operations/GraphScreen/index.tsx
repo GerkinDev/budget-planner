@@ -1,18 +1,21 @@
-import React, {useEffect, useState} from 'react';
-import {Operation} from '@budget-planner/models';
-import {ReadonlyDeep} from 'type-fest';
-import type {OperationsScreenProps} from '..';
-import {Button, DataTable, Text} from 'react-native-paper';
-import {Dimensions, SafeAreaView, StyleSheet, View} from 'react-native';
-import Animated from 'react-native-reanimated';
-import {TimelineCalculator} from '~/services/TimelineCalculator';
-import {GraphData, useGraphDimensions, makeGraph, GraphDot} from './utils';
-import AmountGraph from './AmoutGraph';
-import {roundDate, toPlainDateString} from '~/helpers/date';
-import {DatePickerModal} from 'react-native-paper-dates/lib/module/Date/DatePickerModal';
 import assert from 'assert';
-import BPModal from '~/components/BPModal';
+
+import {Operation} from '@budget-planner/models';
+import React, {useEffect, useState} from 'react';
+import {Dimensions, SafeAreaView, StyleSheet, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
+import {Button, DataTable, Text} from 'react-native-paper';
+import {DatePickerModal} from 'react-native-paper-dates/lib/module/Date/DatePickerModal';
+import Animated from 'react-native-reanimated';
+import {ReadonlyDeep} from 'type-fest';
+
+import BPModal from '~/components/BPModal';
+import {roundDate, toPlainDateString} from '~/helpers/date';
+import {TimelineCalculator} from '~/services/TimelineCalculator';
+
+import AmountGraph from './AmoutGraph';
+import {GraphData, useGraphDimensions, makeGraph, GraphDot} from './utils';
+import type {OperationsScreenProps} from '..';
 
 // From https://betterprogramming.pub/d3-and-react-native-an-essential-guide-to-line-graphs-dc1ce392b440 & https://github.com/friyiajr/D3LineChartSample/blob/solution/src/LineChart.tsx
 

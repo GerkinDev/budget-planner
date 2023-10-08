@@ -1,4 +1,5 @@
 import assert from 'assert';
+
 import React, {
   DependencyList,
   PropsWithChildren,
@@ -74,6 +75,7 @@ export const useBPForeignInteractionManager = (
     touchCatchers || !required,
     `Missing ${BPForeignInteractionManager.name} context`,
   );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const cbMemo = useCallback(callback, deps);
   useEffect(() => {
     if (!touchCatchers) {

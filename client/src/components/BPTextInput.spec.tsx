@@ -1,8 +1,9 @@
-import React from 'react';
 import {fireEvent, render, screen} from '@testing-library/react-native';
+import React from 'react';
+import {ReactTestInstance} from 'react-test-renderer';
+
 import BPForeignInteractionManager from './BPForeignInteractionManager';
 import BPTextInput from './BPTextInput';
-import {ReactTestInstance} from 'react-test-renderer';
 
 jest.useFakeTimers();
 
