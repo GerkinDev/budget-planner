@@ -9,7 +9,7 @@ import {useEmitOnChanged, useSubFormRef} from '../../../../hooks/subFormRef';
 import type {PerTypeOperationProps} from '.';
 import {Button} from 'react-native-paper';
 import {DatePickerModal} from 'react-native-paper-dates/lib/module/Date/DatePickerModal';
-import {toPlainDate} from '~/helpers/date';
+import {roundDate, toPlainDateString} from '~/helpers/date';
 
 const recurringIntervals = [
   {
@@ -69,9 +69,9 @@ const AddOperationRecurring = forwardRef(function AddOperationRecurring(
   ref: Ref<IValidable>,
 ) {
   const [isOpenDate, setIsOpenDate] = useState<boolean>(false);
-  const [date, setDate] = useState<[Date, Date]>([
+  const [date, setDate] = useState<[Date, Date | undefined]>([
     value.date,
-    'until' in value ? value.until ?? value.date : value.date,
+    'until' in value ? value.until : undefined,
   ]);
   const everyInputRef = useRef<IValidable>(null);
   const [every, setEvery] = useState<number>(
@@ -89,7 +89,10 @@ const AddOperationRecurring = forwardRef(function AddOperationRecurring(
     {
       date: date[0],
       periodicity: {every, interval},
-      until: date[0].getTime() === date[1].getTime() ? undefined : date[1],
+      until:
+        date[1] && roundDate(date[0]).getTime() === roundDate(date[1]).getTime()
+          ? undefined
+          : date[1],
     },
     onChanged,
   );
@@ -100,10 +103,11 @@ const AddOperationRecurring = forwardRef(function AddOperationRecurring(
         onPress={() => setIsOpenDate(true)}
         uppercase={false}
         mode="outlined">
-        From {toPlainDate(date[0])}{' '}
-        {date[0].getTime() === date[1].getTime()
+        From {toPlainDateString(date[0])}{' '}
+        {!date[1] ||
+        roundDate(date[0]).getTime() === roundDate(date[1]).getTime()
           ? false
-          : `to ${toPlainDate(date[1])}`}
+          : `to ${toPlainDateString(date[1])}`}
       </Button>
       <DatePickerModal
         locale="en"
@@ -113,9 +117,12 @@ const AddOperationRecurring = forwardRef(function AddOperationRecurring(
         startDate={date[0]}
         endDate={date[1]}
         onConfirm={args => {
-          assert(args.startDate && args.endDate);
+          assert(args.startDate);
           setIsOpenDate(false);
-          setDate([args.startDate, args.endDate]);
+          setDate([
+            roundDate(args.startDate),
+            args.endDate ? roundDate(args.endDate) : undefined,
+          ]);
         }}
       />
       <View style={{flexDirection: 'row'}}>

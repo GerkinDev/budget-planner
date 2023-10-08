@@ -5,7 +5,7 @@ import {DatePickerModal} from 'react-native-paper-dates/lib/module/Date/DatePick
 import {Button} from 'react-native-paper';
 import type {PerTypeOperationProps} from '.';
 import assert from 'assert';
-import {toPlainDate} from '~/helpers/date';
+import {roundDate, toPlainDateString} from '~/helpers/date';
 import {Operation} from '@budget-planner/models';
 
 const AddOperationOneTime = forwardRef(function AddOperationOneTime(
@@ -38,7 +38,7 @@ const AddOperationOneTime = forwardRef(function AddOperationOneTime(
         onPress={() => setIsOpenDate(true)}
         uppercase={false}
         mode="outlined">
-        On {toPlainDate(date)}
+        On {toPlainDateString(date)}
       </Button>
       <DatePickerModal
         locale="en"
@@ -49,7 +49,7 @@ const AddOperationOneTime = forwardRef(function AddOperationOneTime(
         onConfirm={args => {
           assert(args.date);
           setIsOpenDate(false);
-          setDate(args.date);
+          setDate(roundDate(args.date));
         }}
       />
     </>

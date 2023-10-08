@@ -12,6 +12,8 @@ import {basename, dirname} from 'path';
 import {Operation, Profile} from '@budget-planner/models';
 import {isNil, memoizeWith, omit} from 'ramda';
 import {ReadonlyDeep, Jsonify} from 'type-fest';
+import {sortUsing} from '~/helpers/functional';
+import {roundDate} from '~/helpers/date';
 
 type Preferences = {
   defaultProfileName?: string;
@@ -156,7 +158,29 @@ export class Datastore {
       innerRw,
       value => {
         assert(value.name === name);
-        return {...omit(['name'], value), version: 1 as const};
+        return {
+          ...omit(['name'], value),
+          version: 1 as const,
+          timelines: value.timelines?.map(t => ({
+            ...t,
+            operations: t.operations
+              .slice()
+              .map(op => {
+                if (op.type === Operation.Type.Recurring) {
+                  return {
+                    ...op,
+                    date: roundDate(op.date),
+                    until: op.until ? roundDate(op.until) : undefined,
+                  };
+                }
+                return {
+                  ...op,
+                  date: roundDate(op.date),
+                };
+              })
+              .sort(sortUsing(op => op.date.getTime())),
+          })),
+        };
       },
       value => {
         if (value.version === 1) {
@@ -169,9 +193,9 @@ export class Datastore {
                 if (operation.type === Operation.Type.Recurring) {
                   return {
                     ...operation,
-                    date: new Date(operation.date),
+                    date: roundDate(new Date(operation.date)),
                     until: operation.until
-                      ? new Date(operation.until)
+                      ? roundDate(new Date(operation.until))
                       : undefined,
                   };
                 }
