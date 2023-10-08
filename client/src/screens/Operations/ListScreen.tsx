@@ -5,13 +5,7 @@
  * @format
  */
 
-import React, {useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  Text,
-  TouchableHighlight,
-  TouchableOpacity,
-} from 'react-native';
+import React, {ComponentProps, useEffect, useState} from 'react';
 
 import {Operation} from '@budget-planner/models';
 import {Entry, ReadonlyDeep} from 'type-fest';
@@ -19,20 +13,27 @@ import ThemeView from '~/components/ThemeView';
 import {RowMap, SwipeListView} from 'react-native-swipe-list-view';
 import {buildThemeStylesheet, useThemeBg} from '~/hooks/useColorScheme';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {Modal, Portal} from 'react-native-paper';
-import {FontAwesome6Icon, iconWrapper} from '~/components/Icons';
+import {Modal, Portal, Text} from 'react-native-paper';
+import {
+  FontAwesome6Icon,
+  MaterialCommunityIcon,
+  iconWrapper,
+} from '~/components/Icons';
 import BPFABContainer from '~/components/BPFABContainer';
-import AddOperation from './components/AddOperation';
+import EditOperation from './components/EditOperation';
+import {TouchableHighlight} from 'react-native-gesture-handler';
+import assert from 'assert';
+import {StyleSheet, View} from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 22,
   },
-  mainLabel: {
-    padding: 10,
+  entryText: {
+    paddingVertical: 5,
+    paddingLeft: 10,
     fontSize: 18,
-    height: 44,
   },
   amountLabelGt0: {
     color: '#00ff00',
@@ -40,20 +41,16 @@ const styles = StyleSheet.create({
   amountLabelLt0: {
     color: '#ff0000',
   },
-  amountLabel0: {
-    padding: 10,
-    fontSize: 18,
-    height: 44,
-  },
 
   rowFront: {
     alignItems: 'center',
     borderBottomColor: 'black',
     borderBottomWidth: 0.5,
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   rowBack: {
-    alignItems: 'stretch',
+    alignItems: 'center',
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -62,77 +59,96 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+    borderBottomColor: '#aaa',
+    borderBottomWidth: 1,
   },
   actionButton: {
     alignItems: 'center',
     display: 'flex',
     justifyContent: 'center',
-    width: 75,
+    width: 100,
+  },
+  operationTypeIcon: {
+    width: 50,
+    height: 50,
+    textAlign: 'center',
   },
 });
 const useThemeStylesheets = buildThemeStylesheet({
   light: {
     editBtn: {
-      backgroundColor: 'blue',
+      color: 'blue',
     },
     deleteBtn: {
-      backgroundColor: 'red',
+      color: 'red',
     },
     btnText: {
       color: Colors.darker,
     },
   },
   dark: {
-    editBtn: {},
-    deleteBtn: {},
+    editBtn: {
+      color: 'blue',
+    },
+    deleteBtn: {
+      color: 'red',
+    },
+    btnText: {
+      color: Colors.darker,
+    },
   },
 });
 
 function OperationTypeChip({
   operation,
+  ...otherProps
 }: {
   operation: ReadonlyDeep<Operation>;
-}): JSX.Element {
-  switch (operation.type) {
-    case Operation.Type.Checkpoint: {
-      return <Text>Checkpoint</Text>;
-    }
-    case Operation.Type.OneTime: {
-      return <Text>OneTime</Text>;
-    }
-    case Operation.Type.Recurring: {
-      return (
-        <Text>
-          Every{' '}
-          {operation.periodicity.every > 1
-            ? `${operation.periodicity.every} ${operation.periodicity.interval}s`
-            : operation.periodicity.interval}
-        </Text>
-      );
-    }
-  }
+} & Omit<ComponentProps<typeof View>, 'children'>): JSX.Element {
+  return (
+    <View {...otherProps}>
+      {(() => {
+        switch (operation.type) {
+          case Operation.Type.Checkpoint: {
+            return (
+              <MaterialCommunityIcon
+                size={styles.operationTypeIcon.width}
+                styles={[styles.operationTypeIcon]}
+                name="flag-checkered"
+              />
+            );
+          }
+          case Operation.Type.OneTime: {
+            return (
+              <MaterialCommunityIcon
+                size={styles.operationTypeIcon.width}
+                styles={[styles.operationTypeIcon]}
+                name="checkbook"
+              />
+            );
+          }
+          case Operation.Type.Recurring: {
+            return (
+              <>
+                <MaterialCommunityIcon
+                  size={styles.operationTypeIcon.width}
+                  styles={[styles.operationTypeIcon]}
+                  name="repeat-variant"
+                />
+                <Text {...otherProps} style={styles.operationTypeIcon}>
+                  Every{' '}
+                  {operation.periodicity.every > 1
+                    ? `${operation.periodicity.every} ${operation.periodicity.interval}s`
+                    : operation.periodicity.interval}
+                </Text>
+              </>
+            );
+          }
+        }
+      })()}
+    </View>
+  );
 }
-const STUB_OPERATIONS = [
-  {
-    amount: 1000,
-    date: new Date(2023, 0, 1),
-    label: 'Initial credit',
-    type: Operation.Type.Checkpoint,
-  },
-  {
-    amount: -15,
-    date: new Date(2023, 0, 1),
-    label: 'Phone invoice',
-    type: Operation.Type.Recurring,
-    periodicity: {every: 1, interval: 'month'},
-  },
-  {
-    amount: -100,
-    date: new Date(2023, 0, 10),
-    label: 'Pay some fees',
-    type: Operation.Type.OneTime,
-  },
-] satisfies Operation[];
 
 function ListScreen({
   operations,
@@ -144,7 +160,10 @@ function ListScreen({
   const [visible, setVisible] = React.useState(false);
 
   const showModal = () => setVisible(true);
-  const hideModal = () => setVisible(false);
+  const hideModal = () => {
+    setEditedItem(null);
+    setVisible(false);
+  };
 
   const themeStyles = useThemeStylesheets();
   const containerStyle = {...useThemeBg(), padding: 20} as const;
@@ -154,18 +173,22 @@ function ListScreen({
     setOpWithKeys(new Map(operations.map((op, i) => [`${i}`, op])));
   }, [operations]);
   const themeBg = useThemeBg();
+  const [editedItem, setEditedItem] = useState<Operation | null>(null);
 
-  const editItem = console.log.bind(console, 'CLOSE');
-  const deleteItem = console.log.bind(console, 'DELETE');
+  const editItem = (operation: Operation) => {
+    setEditedItem(operation);
+    showModal();
+  };
   const onItemOpen = (rowKey: string, map: RowMap<OpKvp>, value: number) => {
-    if (value > 0) {
-      console.log('Edit', rowKey);
+    assert(rowKey.match(/\d+/));
+    const idx = parseInt(rowKey, 10);
+    if (value >= 0) {
+      const item = operations[idx];
+      editItem(item);
     } else {
-      console.log('Remove', rowKey);
-      // setOperations(actions =>
-      //   actions.filter(action => action !== opWithKeys?.get(rowKey)),
-      // );
+      onChanged([...operations.slice(0, idx), ...operations.slice(idx + 1)]);
     }
+    map[rowKey].closeRow();
   };
   return (
     <>
@@ -174,10 +197,20 @@ function ListScreen({
           visible={visible}
           onDismiss={hideModal}
           contentContainerStyle={containerStyle}>
-          <AddOperation
+          <EditOperation
+            edited={editedItem}
             onSubmit={operation => {
-              onChanged([...operations, operation]);
-              console.log('SUBMIT', operation);
+              console.log('SUBMIT', operation, editedItem);
+              if (editedItem) {
+                const idx = operations.findIndex(op => op === editedItem);
+                console.log(`Was edit for ${idx}`);
+                assert(idx >= 0);
+                const newOps = [...operations];
+                newOps[idx] = operation;
+                onChanged(newOps);
+              } else {
+                onChanged([...operations, operation]);
+              }
               hideModal();
             }}
           />
@@ -198,49 +231,60 @@ function ListScreen({
           props: {
             data: opWithKeys ? [...opWithKeys.entries()] : [],
             renderItem: ({item: [, value]}) => (
-              <TouchableHighlight
-                onPress={() => console.log('You touched me')}
-                style={[themeBg, styles.rowFront]}
-                underlayColor={'#fff'}>
-                <ThemeView>
-                  <Text style={styles.mainLabel}>{value.label}</Text>
-                  <Text
-                    style={{
-                      ...styles.amountLabel0,
-                      ...(value.amount > 0
-                        ? styles.amountLabelGt0
-                        : value.amount < 0
-                        ? styles.amountLabelLt0
-                        : {}),
-                    }}>
-                    {value.amount.toFixed(2)}€
-                  </Text>
-                  <Text style={styles.mainLabel}>
-                    {value.date.toLocaleDateString()}
-                  </Text>
-                  <OperationTypeChip operation={value} />
-                </ThemeView>
+              <TouchableHighlight style={[themeBg]} underlayColor={'#fff'}>
+                <View style={styles.rowFront}>
+                  <OperationTypeChip operation={value} style={{flex: 0}} />
+                  <View
+                    style={{display: 'flex', flexDirection: 'column', flex: 1}}>
+                    {value.label ? (
+                      <Text style={[styles.entryText]}>{value.label}</Text>
+                    ) : (
+                      <Text style={[styles.entryText, {fontStyle: 'italic'}]}>
+                        Not set
+                      </Text>
+                    )}
+                    <Text
+                      style={[
+                        styles.entryText,
+                        value.amount > 0
+                          ? styles.amountLabelGt0
+                          : value.amount < 0
+                          ? styles.amountLabelLt0
+                          : undefined,
+                      ]}>
+                      {value.amount.toFixed(2)}€
+                    </Text>
+                    <Text style={styles.entryText}>
+                      {value.date.toLocaleDateString()}
+                      {value.type === Operation.Type.Recurring
+                        ? value.until
+                          ? ` to ${value.until.toLocaleDateString()}`
+                          : false
+                        : false}
+                    </Text>
+                  </View>
+                </View>
               </TouchableHighlight>
             ),
-            renderHiddenItem: (data, rowMap) => (
-              <ThemeView style={styles.rowBack}>
-                <TouchableOpacity
+            renderHiddenItem: () => (
+              <ThemeView style={[styles.rowBack, themeBg]}>
+                <MaterialCommunityIcon
+                  name="pencil"
+                  size={styles.actionButton.width / 2}
                   style={[styles.actionButton, themeStyles.editBtn]}
-                  onPress={() => editItem(rowMap, data.item)}>
-                  <Text style={themeStyles.btnText}>Edit</Text>
-                </TouchableOpacity>
+                />
 
-                <TouchableOpacity
+                <MaterialCommunityIcon
+                  name="delete"
+                  size={styles.actionButton.width / 2}
                   style={[styles.actionButton, themeStyles.deleteBtn]}
-                  onPress={() => deleteItem(rowMap, data.item)}>
-                  <Text style={themeStyles.btnText}>Delete</Text>
-                </TouchableOpacity>
+                />
               </ThemeView>
             ),
             leftOpenValue: styles.actionButton.width,
             rightOpenValue: -styles.actionButton.width,
-            stopLeftSwipe: styles.actionButton.width,
-            stopRightSwipe: -styles.actionButton.width,
+            stopLeftSwipe: styles.actionButton.width * 1.5,
+            stopRightSwipe: -styles.actionButton.width * 1.5,
             previewOpenValue: -40,
             previewOpenDelay: 0,
             onRowDidOpen: onItemOpen,

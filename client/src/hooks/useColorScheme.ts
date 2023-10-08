@@ -20,11 +20,18 @@ const themeBackgrounds = StyleSheet.create({
 });
 export const useThemeBg = () => themeBackgrounds[useColorScheme()];
 export const buildThemeStylesheet = <
-  T extends Record<string, ViewStyle | TextStyle | ImageStyle>,
->(styles: {
-  dark: T;
-  light: T;
-}) => {
-  const stylesheet = StyleSheet.create(styles);
+  T extends {
+    dark: Record<string, ViewStyle | TextStyle | ImageStyle>;
+    light: Record<string, ViewStyle | TextStyle | ImageStyle>;
+  },
+>(
+  styles: T,
+): (() => T[keyof T]) => {
+  const stylesheet = Object.fromEntries(
+    Object.entries(styles).map(([key, value]) => [
+      key,
+      StyleSheet.create(value),
+    ]),
+  ) as T;
   return () => stylesheet[useColorScheme()];
 };

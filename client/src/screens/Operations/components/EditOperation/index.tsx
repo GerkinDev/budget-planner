@@ -4,7 +4,7 @@ import {Button, SegmentedButtons, Text} from 'react-native-paper';
 import assert from 'assert';
 import BPTextInput from '~/components/BPTextInput';
 import {FontAwesome6Icon, iconWrapper} from '~/components/Icons';
-import {mapObjIndexed} from 'ramda';
+import {mapObjIndexed, omit} from 'ramda';
 import AddOperationRecurring, {
   assertOperationRecurringProps,
 } from './Recurring';
@@ -34,18 +34,25 @@ function assertOperation(value: unknown): asserts value is Operation {
 }
 export type PerTypeOperationProps<TOperation extends Operation = Operation> =
   Except<TOperation, 'label' | 'amount' | 'type'>;
-function AddOperation({onSubmit}: {onSubmit: (operation: Operation) => void}) {
+
+function EditOperation({
+  edited,
+  onSubmit,
+}: {
+  edited?: Operation | null;
+  onSubmit: (operation: Operation) => void;
+}) {
   const labelInputRef = useRef<IValidable>(null);
-  const [label, setLabel] = useState<string>('');
+  const [label, setLabel] = useState<string>(edited?.label ?? '');
   const amountInputRef = useRef<IValidable>(null);
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(edited?.amount ?? 0);
   const [operationType, setOperationType] = useState<Operation.Type | null>(
-    null,
+    edited?.type ?? null,
   );
 
   const [operationOther, setOperationOther] = useState<
     Except<Operation, 'label' | 'amount' | 'type'>
-  >({date: new Date()});
+  >(edited ? omit(['label', 'amount', 'type'], edited) : {date: new Date()});
   const operationSubFormRef = useRef<IValidable>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
 
@@ -165,4 +172,4 @@ function AddOperation({onSubmit}: {onSubmit: (operation: Operation) => void}) {
   );
 }
 
-export default AddOperation;
+export default EditOperation;

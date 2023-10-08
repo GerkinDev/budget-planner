@@ -14,6 +14,7 @@ import {HomeDrawer} from './screens/Home/Drawer';
 import {Linking, Platform} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import OperationsScreen from './screens/Operations';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 // const loadProfile = () => new Datastore().loadDefaultProfile()
 
@@ -78,25 +79,27 @@ function App(): JSX.Element {
   }
 
   return (
-    <PaperProvider>
-      <NavigationContainer
-        initialState={initialState}
-        onStateChange={state => {
-          console.log(JSON.stringify(state, null, 4));
-          return AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state));
-        }}>
-        <Stack.Navigator>
-          <Stack.Screen name="Operations" component={OperationsScreen} />
-          <Stack.Screen
-            name="Home"
-            component={HomeDrawer}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </PaperProvider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <PaperProvider>
+        <NavigationContainer
+          initialState={initialState}
+          onStateChange={state => {
+            console.log(JSON.stringify(state, null, 4));
+            return AsyncStorage.setItem(PERSISTENCE_KEY, JSON.stringify(state));
+          }}>
+          <Stack.Navigator>
+            <Stack.Screen name="Operations" component={OperationsScreen} />
+            <Stack.Screen
+              name="Home"
+              component={HomeDrawer}
+              options={{
+                headerShown: false,
+              }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </PaperProvider>
+    </GestureHandlerRootView>
     // <StatusBar
     //     barStyle={`${useColorScheme()}-content`}
     //     backgroundColor={useThemeBg().backgroundColor}
