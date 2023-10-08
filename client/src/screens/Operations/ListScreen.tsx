@@ -24,6 +24,7 @@ import EditOperation from './components/EditOperation';
 import {TouchableHighlight} from 'react-native-gesture-handler';
 import assert from 'assert';
 import {StyleSheet, View} from 'react-native';
+import type {OperationsScreenProps} from '.';
 
 const styles = StyleSheet.create({
   container: {
@@ -150,10 +151,10 @@ function OperationTypeChip({
   );
 }
 
-function ListScreen({
+function OperationsListScreen({
   operations,
   onChanged,
-}: {
+}: OperationsScreenProps<'Operations>List'> & {
   operations: ReadonlyDeep<Operation[]>;
   onChanged: (operations: ReadonlyDeep<Operation[]>) => void;
 }): JSX.Element {
@@ -296,4 +297,4 @@ function ListScreen({
   );
 }
 
-export default ListScreen;
+export default OperationsListScreen;
