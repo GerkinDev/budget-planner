@@ -4,6 +4,7 @@
     "composite": true,
     "esModuleInterop": true,
     "lib": ["ESNext"],
+    "types": ["node"],
     "paths": {
       "@budget-planner/models": ["../models/src"],
       "~": ["./src"],

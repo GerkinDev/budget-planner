@@ -2,7 +2,7 @@
     "extends": "./tsconfig.src.json",
     "compilerOptions": {
         "jsx": "react",
-        "types": ["jest-extended", "jest"],
+        "types": ["jest-extended", "jest", "node"],
         "paths": {
           "@budget-planner/models": ["../models/src"],
           "~": ["./src"],

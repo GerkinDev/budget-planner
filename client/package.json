@@ -58,6 +58,7 @@
     "@types/assert": "^1.5.7",
     "@types/d3": "^7.4.1",
     "@types/jest": "^29.5.5",
+    "@types/node": "^20.8.3",
     "@types/ramda": "^0.29.6",
     "@types/react": "^18.2.25",
     "@types/react-native-vector-icons": "^6.4.15",
