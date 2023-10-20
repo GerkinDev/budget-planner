@@ -119,7 +119,11 @@ describe('computedDataPoints', () => {
         date: d(e.date),
         code: expect.toBeNumber(),
         operations: e.src
-          ? expect.toIncludeSameMembers(e.src.map(src => sourceFull[src]))
+          ? expect.toIncludeSameMembers(
+              e.src.map(src =>
+                expect.objectContaining({source: sourceFull[src]}),
+              ),
+            )
           : expect.anything(),
       })),
     );

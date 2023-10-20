@@ -2,6 +2,7 @@ import {inspect} from 'util';
 
 import {Temporal} from '@js-temporal/polyfill';
 import {line, scaleLinear, scaleTime} from 'd3';
+import {isNotNil} from 'ramda';
 import {useMemo} from 'react';
 import {Dimensions} from 'react-native';
 import {IterableElement} from 'type-fest';
@@ -12,14 +13,21 @@ import {TimelineCalculator} from '~/services/TimelineCalculator';
 export type DataPoint = {
   date: Date;
   value: number;
+  checkpointValue?: number;
   source: TimelineCalculator.ComputedOperationPoint;
 };
 export type GraphDot = {
   x: number;
   y: number;
+  isCheckpoint?: boolean;
   source: TimelineCalculator.ComputedOperationPoint;
 };
 export type Dims = {width: number; height: number};
+
+export const TOP_PADDING = 10;
+export const BOTTOM_PADDING = 50;
+export const LEFT_PADDING = 30;
+export const RIGHT_PADDING = 25;
 
 const MAX_Y_SCALE_COUNT = 10;
 const _getYScales = (
@@ -47,36 +55,53 @@ const _loopUpToDate = (
   }
   return acc;
 };
-const _getXScalesDates = (min: Date, max: Date) => {
+const _getXScalesDates = (
+  min: Date,
+  max: Date,
+): {
+  markers: Temporal.PlainDate[];
+  format: (date: Temporal.PlainDate) => string;
+} => {
   const maxDate = toPlainDate(max);
   const minDate = toPlainDate(min);
   const delta = maxDate.since(minDate);
   if (delta.total({unit: 'days', relativeTo: minDate}) < 10) {
-    console.log('1 day step');
-    return _loopUpToDate(minDate, maxDate, d => d.add({days: 1}));
+    return {
+      markers: _loopUpToDate(minDate, maxDate, d => d.add({days: 1})),
+      format: date => date.day.toString(),
+    };
   }
   if (delta.total({unit: 'days', relativeTo: minDate}) < 30) {
-    console.log('5 days step');
-    return _loopUpToDate(minDate, maxDate, d => d.add({days: 5}));
+    return {
+      markers: _loopUpToDate(minDate, maxDate, d => d.add({days: 5})),
+      format: date => `${date.month}/${date.day}`,
+    };
   }
-  if (delta.total({unit: 'months', relativeTo: minDate}) < 12) {
-    console.log('1 month step');
-    return _loopUpToDate(minDate, maxDate, d =>
-      d.with({day: 1}).add({months: 1}),
-    );
+  if (delta.total({unit: 'months', relativeTo: minDate}) < 15) {
+    return {
+      markers: _loopUpToDate(minDate, maxDate, d =>
+        d.with({day: 1}).add({months: 1}),
+      ),
+      format: date =>
+        `${date.day}/${date.month}/${date.year.toString().slice(-2)}`,
+    };
   }
   if (delta.total({unit: 'years', relativeTo: minDate}) < 10) {
-    console.log('1 year step');
-    return _loopUpToDate(minDate, maxDate, d =>
-      d.with({day: 1, month: 1}).add({years: 1}),
-    );
+    return {
+      markers: _loopUpToDate(minDate, maxDate, d =>
+        d.with({day: 1, month: 1}).add({years: 1}),
+      ),
+      format: date =>
+        `${date.day}/${date.month}/${date.year.toString().slice(-2)}`,
+    };
   }
   throw new Error('Unsupported');
 };
-const _getXScales = (min: Date, max: Date, scaleX: (value: Date) => number) =>
-  _getXScalesDates(min, max).map(d => {
+const _getXScales = (min: Date, max: Date, scaleX: (value: Date) => number) => {
+  const {format, markers} = _getXScalesDates(min, max);
+  return markers.map(d => {
     return {
-      text: d.toLocaleString(),
+      text: format(d),
       x: scaleX(
         new Date(
           d.toZonedDateTime(Temporal.Now.timeZoneId()).epochMilliseconds,
@@ -84,6 +109,7 @@ const _getXScales = (min: Date, max: Date, scaleX: (value: Date) => number) =>
       ),
     };
   });
+};
 export const makeGraph = (
   data: DataPoint[],
   dateRange: [Date, Date?] | undefined,
@@ -94,7 +120,10 @@ export const makeGraph = (
   const minY = Math.min(...data.map(val => val.value), 0);
   const scaleY = scaleLinear()
     .domain([maxY, minY])
-    .range([Y_PADDING, graphDimensions.height - Y_PADDING]);
+    .range([
+      TOP_PADDING,
+      graphDimensions.height - (TOP_PADDING + BOTTOM_PADDING),
+    ]);
 
   const maxX =
     dateRange?.[1] ??
@@ -104,16 +133,28 @@ export const makeGraph = (
     new Date(Math.min(...data.map(val => val.date.getTime())));
   const scaleX = scaleTime()
     .domain([minX, maxX])
-    .range([LEFT_PADDING, graphDimensions.width]);
+    .range([LEFT_PADDING, graphDimensions.width - RIGHT_PADDING]);
 
-  const dots = data.map<GraphDot>(d => ({
-    x: scaleX(d.date),
-    y: scaleY(d.value),
-    source: d.source,
-  }));
+  const dots = data.flatMap<GraphDot>(d =>
+    [
+      {
+        x: scaleX(d.date),
+        y: scaleY(d.value),
+        isCheckpoint: isNotNil(d.checkpointValue),
+        source: d.source,
+      },
+      d.checkpointValue
+        ? {
+            x: scaleX(d.date),
+            y: scaleY(d.checkpointValue),
+            source: d.source,
+          }
+        : null,
+    ].filter(isNotNil),
+  );
   const curvedLine = line<IterableElement<typeof dots>>()
     .x(d => d.x)
-    .y(d => d.y)(dots);
+    .y(d => d.y)(dots.filter(d => d.isCheckpoint !== true));
 
   return {
     max: maxY,
@@ -134,7 +175,13 @@ export const useGraphDimensions = () => {
   const {width} = Dimensions.get('screen');
 
   const card = {width: width - 20, height: 325};
-  const _dimensions = {card, graph: {width: card.width - 60, height: 200}};
+  const _dimensions = {
+    card,
+    graph: {
+      width: card.width - 10,
+      height: 325 - (TOP_PADDING + BOTTOM_PADDING),
+    },
+  };
 
   return useMemo(
     () => ({
@@ -155,8 +202,6 @@ export const useGraphDimensions = () => {
     ],
   );
 };
-export const Y_PADDING = 10;
-export const LEFT_PADDING = 30;
 
 export const findBestScale = (range: number, maxScale: number) => {
   const steps = [1, 2, 5];

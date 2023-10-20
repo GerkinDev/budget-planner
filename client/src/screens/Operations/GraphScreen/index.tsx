@@ -10,10 +10,11 @@ import Animated from 'react-native-reanimated';
 import {ReadonlyDeep} from 'type-fest';
 
 import BPModal from '~/components/BPModal';
+import {MaterialIcon} from '~/components/Icons';
 import {roundDate, toPlainDateString} from '~/helpers/date';
 import {TimelineCalculator} from '~/services/TimelineCalculator';
 
-import AmountGraph from './AmoutGraph';
+import AmountGraph, {OPERATION_TYPE_COLORS} from './AmoutGraph';
 import {GraphData, useGraphDimensions, makeGraph, GraphDot} from './utils';
 import type {OperationsScreenProps} from '..';
 
@@ -85,7 +86,8 @@ function OperationsGraphScreen({
       makeGraph(
         dataPoints.map(dp => ({
           date: dp.date,
-          value: dp.actual ?? dp.expected,
+          value: dp.expected,
+          checkpointValue: dp.actual,
           source: dp,
         })),
         dateRange,
@@ -111,13 +113,15 @@ function OperationsGraphScreen({
           {selected?.source.operations.map((op, i) => (
             <DataTable.Row key={i}>
               <DataTable.Cell>
-                {op.label ? (
-                  op.label
+                {op.source.label ? (
+                  op.source.label
                 ) : (
                   <Text style={{fontStyle: 'italic'}}>Unset</Text>
                 )}
               </DataTable.Cell>
-              <DataTable.Cell numeric>{op.amount}€</DataTable.Cell>
+              <DataTable.Cell numeric>
+                {op.source.amount.toFixed(2)}€
+              </DataTable.Cell>
             </DataTable.Row>
           ))}
 
@@ -128,10 +132,9 @@ function OperationsGraphScreen({
               </Text>
             </DataTable.Cell>
             <DataTable.Cell numeric>
-              {selected?.source.operations.reduce(
-                (acc, op) => acc + op.amount,
-                0,
-              )}
+              {selected?.source.operations
+                .reduce((acc, op) => acc + op.source.amount, 0)
+                .toFixed(2)}
               €
             </DataTable.Cell>
           </DataTable.Row>
@@ -140,7 +143,10 @@ function OperationsGraphScreen({
               <Text style={styles.dotDetailsTableLabelSpecial}>Result</Text>
             </DataTable.Cell>
             <DataTable.Cell numeric>
-              {selected?.source.actual ?? selected?.source.expected}€
+              {(selected?.source.expected ?? selected?.source.actual)?.toFixed(
+                2,
+              )}
+              €
             </DataTable.Cell>
           </DataTable.Row>
         </DataTable>
@@ -190,6 +196,36 @@ function OperationsGraphScreen({
               )}
             </View>
           </Animated.View>
+          <View
+            style={{
+              marginTop: 10,
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
+            }}>
+            <Text>
+              <MaterialIcon
+                name="circle"
+                color={OPERATION_TYPE_COLORS.Checkpoint?.formatHex()}
+              />
+              Checkpoint
+            </Text>
+            <Text>
+              <MaterialIcon
+                name="circle"
+                color={OPERATION_TYPE_COLORS.OneTime?.formatHex()}
+              />
+              One time
+            </Text>
+            <Text>
+              <MaterialIcon
+                name="circle"
+                color={OPERATION_TYPE_COLORS.Recurring?.formatHex()}
+              />
+              Recurring
+            </Text>
+          </View>
         </ScrollView>
       </SafeAreaView>
     </>

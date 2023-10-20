@@ -78,71 +78,72 @@ const _expandOperations = (
     .sort(sortUsing(op => op.result.date.getTime()));
 
 const _accumulateOperations = (
-  operations: ReadonlyDeep<Operation.Checkpoint | Operation.OneTime>[],
-) =>
+  operations: ReadonlyDeep<ExpandedOperation>[],
+): DP[] =>
   operations
-    .map(op => ({operation: op, code: getDateCode(op.date)}))
-    .reduce<
-      Spread<
-        DP,
-        {operations: ReadonlyDeep<Operation.Checkpoint | Operation.OneTime>[]}
-      >[]
-    >((acc, {operation, code}) => {
-      const prev = acc.at(-1);
-      const newEntry =
-        operation.type === Operation.Type.Checkpoint
-          ? {
-              actual: operation.amount,
-              expected: prev?.expected ?? 0,
-              date: operation.date,
-              operations: [operation],
-              code: code,
-            }
-          : {
-              expected:
-                (prev?.actual ?? prev?.expected ?? 0) + operation.amount,
-              date: operation.date,
-              operations: [operation],
-              code: code,
-            };
-      if (newEntry.code === prev?.code) {
-        return [
-          ...acc.slice(0, -1),
-          {
-            ...prev,
-            ...newEntry,
-            operations: [...newEntry.operations, ...prev.operations],
-          },
-        ];
-      }
-      return [...acc, {...newEntry}];
-    }, []);
+    .map(op => ({operation: op, code: getDateCode(op.result.date)}))
+    .reduce<Spread<DP, {operations: ReadonlyDeep<ExpandedOperation>[]}>[]>(
+      (acc, {operation, code}) => {
+        const prev = acc.at(-1);
+        const newEntry =
+          operation.result.type === Operation.Type.Checkpoint
+            ? {
+                actual: operation.result.amount,
+                expected: prev?.expected ?? 0,
+                date: operation.result.date,
+                operations: [operation],
+                code: code,
+              }
+            : {
+                expected:
+                  (prev?.actual ?? prev?.expected ?? 0) +
+                  operation.result.amount,
+                date: operation.result.date,
+                operations: [operation],
+                code: code,
+              };
+        if (newEntry.code === prev?.code) {
+          return [
+            ...acc.slice(0, -1),
+            {
+              ...prev,
+              ...newEntry,
+              operations: [...newEntry.operations, ...prev.operations],
+            },
+          ];
+        }
+        return [...acc, {...newEntry}];
+      },
+      [],
+    );
 
-const _computeDataPoints = (
+const _computeDataPoints = function* (
   operations: ReadonlyDeep<Operation[]>,
+  includePrevious: boolean,
   from?: Date,
   to?: Date,
-) => {
+): Iterable<DP> {
   const expandedOperations = _expandOperations(operations, to);
-  const operationsSourceMap = new WeakMap(
-    expandedOperations.map(({result, source}) => [result, source] as const),
-  );
-  const accumulatedOperations = _accumulateOperations(
-    expandedOperations.map(op => op.result),
-  );
-  const ops = accumulatedOperations.map(accumulated => ({
-    ...accumulated,
-    operations: accumulated.operations.map(
-      op =>
-        operationsSourceMap.get(op) ??
-        assert.fail(`Could not get source for operation ${op.label}`),
-    ),
-  }));
+  const accumulatedOperations = _accumulateOperations(expandedOperations);
   if (from) {
     const fromCode = getDateCode(from);
-    return ops.filter(op => op.code >= fromCode);
+    var ops = accumulatedOperations.sort(sortUsing(op => op.code));
+    let prev: DP | null = null;
+    for (const op of ops) {
+      if (op.code > fromCode) {
+        if (prev) {
+          yield prev;
+        }
+      }
+      prev = op;
+    }
+    if (prev) {
+      yield prev;
+    }
+    return;
   }
-  return ops;
+  yield* accumulatedOperations;
+  return;
 };
 
 export class TimelineCalculator {
@@ -154,7 +155,9 @@ export class TimelineCalculator {
   private _computedDataPoints?: readonly DP[];
   public get computedDataPoints() {
     if (!this._computedDataPoints) {
-      this._computedDataPoints = _computeDataPoints(this.operations);
+      this._computedDataPoints = [
+        ..._computeDataPoints(this.operations, false),
+      ];
     }
     return this._computedDataPoints;
   }
@@ -165,18 +168,18 @@ export class TimelineCalculator {
       .sort(sortUsing(({date}) => date.getTime()));
   }
 
-  public forRange(from?: Date, to?: Date) {
+  public forRange(from?: Date, to?: Date, includePrevious = true) {
     if (!from && !to) {
       return this.computedDataPoints;
     }
-    return _computeDataPoints(this.operations, from, to);
+    return [..._computeDataPoints(this.operations, includePrevious, from, to)];
   }
 }
 export namespace TimelineCalculator {
   export type ComputedOperationPoint = ReadonlyDeep<{
     date: Date;
     code: number;
-    operations: Operation[];
+    operations: ExpandedOperation[];
     expected: number;
     actual?: number;
   }>;
