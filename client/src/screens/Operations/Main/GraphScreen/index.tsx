@@ -16,7 +16,7 @@ import {TimelineCalculator} from '~/services/TimelineCalculator';
 
 import AmountGraph, {OPERATION_TYPE_COLORS} from './AmoutGraph';
 import {GraphData, useGraphDimensions, makeGraph, GraphDot} from './utils';
-import type {OperationsScreenProps} from '..';
+import type {OperationsMainScreenProps} from '..';
 
 // From https://betterprogramming.pub/d3-and-react-native-an-essential-guide-to-line-graphs-dc1ce392b440 & https://github.com/friyiajr/D3LineChartSample/blob/solution/src/LineChart.tsx
 
@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
 
 function OperationsGraphScreen({
   operations,
-}: OperationsScreenProps<'Operations>Graph'> & {
+}: OperationsMainScreenProps<'Operations>Main>Graph'> & {
   operations: ReadonlyDeep<Operation[]>;
 }) {
   const [graphData, setGraphData] = useState<GraphData>();

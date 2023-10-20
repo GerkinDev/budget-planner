@@ -20,7 +20,7 @@ import {
 import ThemeView from '~/components/ThemeView';
 import {buildThemeStylesheet, useThemeBg} from '~/hooks/useColorScheme';
 
-import type {OperationsScreenProps} from '.';
+import type {OperationsMainScreenProps} from '.';
 import EditOperation from './components/EditOperation';
 
 const styles = StyleSheet.create({
@@ -151,7 +151,7 @@ function OperationTypeChip({
 function OperationsListScreen({
   operations,
   onChanged,
-}: OperationsScreenProps<'Operations>List'> & {
+}: OperationsMainScreenProps<'Operations>Main>List'> & {
   operations: ReadonlyDeep<Operation[]>;
   onChanged: (operations: ReadonlyDeep<Operation[]>) => void;
 }): JSX.Element {

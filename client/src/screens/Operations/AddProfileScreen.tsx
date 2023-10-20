@@ -6,9 +6,10 @@ import BPForeignInteractionManager from '~/components/BPForeignInteractionManage
 import BPTextInput from '~/components/BPTextInput';
 import {FontAwesome6Icon} from '~/components/Icons';
 import ThemeView from '~/components/ThemeView';
+import {IValidable} from '~/helpers/validation';
 import {Datastore} from '~/services/Datastore';
 
-import type {HomeScreenProps} from './Drawer';
+import type {OperationsScreenProps} from '.';
 
 const styles = StyleSheet.create({
   switchContainer: {
@@ -20,7 +21,7 @@ const styles = StyleSheet.create({
 
 function AddProfileScreen({
   navigation,
-}: HomeScreenProps<'Home>AddProfile'>): JSX.Element {
+}: OperationsScreenProps<'Operations>AddProfile'>): JSX.Element {
   const profileInputRef = useRef<IValidable>(null);
   const foreignInteractionManagerRef =
     useRef<ComponentRef<typeof BPForeignInteractionManager>>(null);

@@ -13,7 +13,7 @@ import {FontAwesome6Icon, iconWrapper} from '~/components/Icons';
 import ThemeView from '~/components/ThemeView';
 import {Datastore} from '~/services/Datastore';
 
-import type {HomeScreenProps} from './Drawer';
+import type {OperationsScreenProps} from '.';
 
 const datastore = new Datastore();
 
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
 
 function ProfilesScreen({
   navigation,
-}: HomeScreenProps<'Home>Profiles'>): JSX.Element {
+}: OperationsScreenProps<'Operations>Profiles'>): JSX.Element {
   const profilesLoading = useAsync({
     promiseFn: useCallback(() => {
       console.log('List profiles');
@@ -117,7 +117,7 @@ function ProfilesScreen({
               extended={isFABExtended}
               visible={true}
               onPress={() => {
-                navigation.navigate('Home>AddProfile');
+                navigation.navigate('Operations>AddProfile');
               }}
               animateFrom={'right'}
               iconMode={'dynamic'}

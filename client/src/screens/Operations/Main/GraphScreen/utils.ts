@@ -64,6 +64,9 @@ const _getXScalesDates = (
   const maxDate = toPlainDate(max);
   const minDate = toPlainDate(min);
   const delta = maxDate.since(minDate);
+  if (delta.total({unit: 'days', relativeTo: minDate}) == 0) {
+    return {markers: [], format: date => date.day.toString()};
+  }
   if (delta.total({unit: 'days', relativeTo: minDate}) < 10) {
     return {
       markers: _loopUpToDate(minDate, maxDate, d => d.add({days: 1})),
