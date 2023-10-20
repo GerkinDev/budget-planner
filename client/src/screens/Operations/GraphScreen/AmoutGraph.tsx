@@ -83,6 +83,22 @@ function AmountGraph({
               width={dimensions.width - LEFT_PADDING}
             />
           </ClipPath>
+          <ClipPath id="positive-clip">
+            <Rect
+              x={LEFT_PADDING}
+              y={0}
+              height={graphData.y.zero}
+              width={dimensions.width - LEFT_PADDING}
+            />
+          </ClipPath>
+          <ClipPath id="negative-clip">
+            <Rect
+              x={LEFT_PADDING}
+              y={graphData.y.zero}
+              height={dimensions.height}
+              width={dimensions.width - LEFT_PADDING}
+            />
+          </ClipPath>
           {gradients.map((c, i) => (
             <RadialGradient
               key={i}
@@ -122,6 +138,13 @@ function AmountGraph({
                     </G>
                   );
                 })}
+                <Line
+                  x1={LEFT_PADDING}
+                  y={graphData.y.zero}
+                  x2={dimensions.width}
+                  stroke={gridLineColor}
+                  strokeWidth="3"
+                />
               </G>
               <G id="x-axis">
                 {/* Dates */}
@@ -155,6 +178,19 @@ function AmountGraph({
 
             <G id="inner-graph" clipPath="url(#graph-clip)">
               <Path d={graphData.curve!} strokeWidth="1" fill="none" />
+              <Path
+                d={graphData.area!}
+                fill="#00f"
+                fillOpacity={0.2}
+                clipPath="url(#positive-clip)"
+              />
+              <Path
+                d={graphData.area!}
+                fill="#f00"
+                fillOpacity={0.2}
+                fillRule="nonzero"
+                clipPath="url(#negative-clip)"
+              />
               {dots.map((d, i) => {
                 return (
                   <Circle

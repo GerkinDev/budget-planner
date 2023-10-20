@@ -1,7 +1,5 @@
-import {inspect} from 'util';
-
 import {Temporal} from '@js-temporal/polyfill';
-import {line, scaleLinear, scaleTime} from 'd3';
+import {area, line, scaleLinear, scaleTime} from 'd3';
 import {isNotNil} from 'ramda';
 import {useMemo} from 'react';
 import {Dimensions} from 'react-native';
@@ -20,6 +18,7 @@ export type GraphDot = {
   x: number;
   y: number;
   isCheckpoint?: boolean;
+  isExpandCheckpoint?: boolean;
   source: TimelineCalculator.ComputedOperationPoint;
 };
 export type Dims = {width: number; height: number};
@@ -115,9 +114,14 @@ export const makeGraph = (
   dateRange: [Date, Date?] | undefined,
   graphDimensions: Dims,
 ) => {
-  console.log('Graph data', inspect(data, {colors: true}));
-  const maxY = Math.max(...data.map(val => val.value), 0);
-  const minY = Math.min(...data.map(val => val.value), 0);
+  const maxY = Math.max(
+    ...data.map(val => val.checkpointValue ?? val.value),
+    0,
+  );
+  const minY = Math.min(
+    ...data.map(val => val.checkpointValue ?? val.value),
+    0,
+  );
   const scaleY = scaleLinear()
     .domain([maxY, minY])
     .range([
@@ -152,14 +156,22 @@ export const makeGraph = (
         : null,
     ].filter(isNotNil),
   );
-  const curvedLine = line<IterableElement<typeof dots>>()
-    .x(d => d.x)
-    .y(d => d.y)(dots.filter(d => d.isCheckpoint !== true));
+  const nonCheckpoints = dots.filter(d => d.isCheckpoint !== true);
 
   return {
-    max: maxY,
-    min: minY,
-    curve: curvedLine,
+    y: {
+      zero: scaleY(0),
+      max: maxY,
+      min: minY,
+    },
+    curve: line<IterableElement<typeof dots>>()
+      .x(d => d.x)
+      .y(d => d.y)(nonCheckpoints),
+    area: area<IterableElement<typeof dots>>(
+      d => d.x,
+      scaleY(0),
+      d => d.y,
+    )(nonCheckpoints),
     dots,
     scales: {
       x: _getXScales(minX, maxX, scaleX),

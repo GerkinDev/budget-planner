@@ -48,6 +48,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   graphCard: {
+    marginTop: 15,
     elevation: 5,
     borderRadius: 20,
     backgroundColor: 'white',
@@ -62,6 +63,22 @@ const styles = StyleSheet.create({
 
   dotDetailsTableLabelSpecial: {
     fontWeight: 'bold',
+  },
+
+  legendContainer: {
+    marginTop: 10,
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  legendItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  legendItemDot: {
+    marginRight: 3,
   },
 });
 
@@ -184,8 +201,8 @@ function OperationsGraphScreen({
           <Animated.View style={[styles.graphCard, dimensions.card]}>
             <View style={styles.graphContainer}>
               <View style={styles.graphTitleContainer}>
-                <Text style={styles.graphTitleText}>FACEBOOK</Text>
-                <Text style={styles.graphTitleText}>0</Text>
+                <Text style={styles.graphTitleText}>Balance</Text>
+                <Text style={styles.graphTitleText} />
               </View>
               {graphData && (
                 <AmountGraph
@@ -196,35 +213,31 @@ function OperationsGraphScreen({
               )}
             </View>
           </Animated.View>
-          <View
-            style={{
-              marginTop: 10,
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-evenly',
-            }}>
-            <Text>
+          <View style={styles.legendContainer}>
+            <View style={styles.legendItem}>
               <MaterialIcon
                 name="circle"
                 color={OPERATION_TYPE_COLORS.Checkpoint?.formatHex()}
+                style={styles.legendItemDot}
               />
-              Checkpoint
-            </Text>
-            <Text>
+              <Text>Checkpoint</Text>
+            </View>
+            <View style={styles.legendItem}>
               <MaterialIcon
                 name="circle"
                 color={OPERATION_TYPE_COLORS.OneTime?.formatHex()}
+                style={styles.legendItemDot}
               />
-              One time
-            </Text>
-            <Text>
+              <Text>One time</Text>
+            </View>
+            <View style={styles.legendItem}>
               <MaterialIcon
                 name="circle"
                 color={OPERATION_TYPE_COLORS.Recurring?.formatHex()}
+                style={styles.legendItemDot}
               />
-              Recurring
-            </Text>
+              <Text>Recurring</Text>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
