@@ -1,0 +1,12 @@
+- List
+  - Month cursor on the left, year on the right
+  - Sticky accumulator at date
+- Edit entry
+  - Alternatives for expenditures (or range)
+  - Markdown notes
+  - "Someday" option
+- Entry calendar view:
+  - Highlight days with other entries
+- Graph
+  - Month per month swipe
+  - Memorize time ranges
