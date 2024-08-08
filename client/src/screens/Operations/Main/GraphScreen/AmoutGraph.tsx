@@ -62,6 +62,7 @@ function AmountGraph({
           )
           .map(c => c / opCount)
           .map(clamp(0, 255))
+          .map(Math.round)
           .map(c => c.toString(16).padStart(2, '0'))
           .join('');
         return {...d, color: finalColor};
