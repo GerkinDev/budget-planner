@@ -1,7 +1,7 @@
 import {Operation} from '@budget-planner/models';
 import {color} from 'd3';
 import {clamp, uniq} from 'ramda';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {StyleSheet} from 'react-native';
 import Animated from 'react-native-reanimated';
 import Svg, {
@@ -48,22 +48,26 @@ function AmountGraph({
   dimensions: Dims;
   onDotSelected: (dot: GraphDot) => void;
 }) {
-  const dots = graphData.dots.map(d => {
-    const opCount = d.source.operations.length;
-    const finalColor = d.source.operations
-      .reduce<[number, number, number]>(
-        ([r, g, b], op) => {
-          const opColor = OPERATION_TYPE_COLORS[op.source.type]!.rgb();
-          return [r + opColor.r, g + opColor.g, b + opColor.b];
-        },
-        [0, 0, 0],
-      )
-      .map(c => c / opCount)
-      .map(clamp(0, 255))
-      .map(c => c.toString(16).padStart(2, '0'))
-      .join('');
-    return {...d, color: finalColor};
-  });
+  const dots = useMemo(
+    () =>
+      graphData.dots.map(d => {
+        const opCount = d.source.operations.length;
+        const finalColor = d.source.operations
+          .reduce<[number, number, number]>(
+            ([r, g, b], op) => {
+              const opColor = OPERATION_TYPE_COLORS[op.source.type]!.rgb();
+              return [r + opColor.r, g + opColor.g, b + opColor.b];
+            },
+            [0, 0, 0],
+          )
+          .map(c => c / opCount)
+          .map(clamp(0, 255))
+          .map(c => c.toString(16).padStart(2, '0'))
+          .join('');
+        return {...d, color: finalColor};
+      }),
+    [graphData],
+  );
   const gradients = uniq(dots.map(d => d.color));
   const elementColor = '#333333';
   const gridLineColor = '#d7d7d7';

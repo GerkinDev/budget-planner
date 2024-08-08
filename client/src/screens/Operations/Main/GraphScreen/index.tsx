@@ -1,7 +1,7 @@
 import assert from 'assert';
 
 import {Operation} from '@budget-planner/models';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Dimensions, SafeAreaView, StyleSheet, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Button, DataTable, Text} from 'react-native-paper';
@@ -87,7 +87,6 @@ function OperationsGraphScreen({
 }: OperationsMainScreenProps<'Operations>Main>Graph'> & {
   operations: ReadonlyDeep<Operation[]>;
 }) {
-  const [graphData, setGraphData] = useState<GraphData>();
   const [dateRange, setDateRange] = useState<[Date, Date?]>([
     roundDate(new Date()),
   ]);
@@ -95,21 +94,19 @@ function OperationsGraphScreen({
   const [selected, setSelected] = useState<GraphDot>();
 
   const dimensions = useGraphDimensions();
-  useEffect(() => {
+  const graphData = useMemo(() => {
     const newCalculator = TimelineCalculator.for(operations);
     console.log('Date range', dateRange);
     const dataPoints = newCalculator.forRange(dateRange?.[0], dateRange?.[1]);
-    setGraphData(
-      makeGraph(
-        dataPoints.map(dp => ({
-          date: dp.date,
-          value: dp.expected,
-          checkpointValue: dp.actual,
-          source: dp,
-        })),
-        dateRange,
-        dimensions.graph,
-      ),
+    return makeGraph(
+      dataPoints.map(dp => ({
+        date: dp.date,
+        value: dp.expected,
+        checkpointValue: dp.actual,
+        source: dp,
+      })),
+      dateRange,
+      dimensions.graph,
     );
   }, [operations, dimensions, dateRange]);
 
