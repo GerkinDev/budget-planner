@@ -10,13 +10,14 @@ import {TimelineCalculator} from '~/services/TimelineCalculator';
 
 export type DataPoint = {
   date: Date;
-  value: number;
+  value: {min: number; max: number; sum: number};
   checkpointValue?: number;
   source: TimelineCalculator.ComputedOperationPoint;
 };
 export type GraphDot = {
   x: number;
   y: number;
+  yRange: {min: number; max: number};
   isCheckpoint?: boolean;
   isExpandCheckpoint?: boolean;
   source: TimelineCalculator.ComputedOperationPoint;
@@ -118,11 +119,11 @@ export const makeGraph = (
   graphDimensions: Dims,
 ) => {
   const maxY = Math.max(
-    ...data.map(val => val.checkpointValue ?? val.value),
+    ...data.map(val => val.checkpointValue ?? val.value.max),
     0,
   );
   const minY = Math.min(
-    ...data.map(val => val.checkpointValue ?? val.value),
+    ...data.map(val => val.checkpointValue ?? val.value.min),
     0,
   );
   const scaleY = scaleLinear()
@@ -146,7 +147,8 @@ export const makeGraph = (
     [
       {
         x: scaleX(d.date),
-        y: scaleY(d.value),
+        y: scaleY(d.value.sum),
+        yRange: {min: scaleY(d.value.min), max: scaleY(d.value.max)},
         isCheckpoint: isNotNil(d.checkpointValue),
         source: d.source,
       },
@@ -154,6 +156,10 @@ export const makeGraph = (
         ? {
             x: scaleX(d.date),
             y: scaleY(d.checkpointValue),
+            yRange: {
+              min: scaleY(d.checkpointValue),
+              max: scaleY(d.checkpointValue),
+            },
             source: d.source,
           }
         : null,
@@ -180,7 +186,7 @@ export const makeGraph = (
       x: _getXScales(minX, maxX, scaleX),
       y: _getYScales(minY, maxY, scaleY),
     },
-    mostRecent: data[data.length - 1].value,
+    mostRecent: data.at(-1)?.value.sum,
   };
 };
 

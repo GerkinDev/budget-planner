@@ -77,45 +77,76 @@ const _expandOperations = (
     })
     .sort(sortUsing(op => op.result.date.getTime()));
 
+type DPWithOperations = Spread<
+  DP,
+  {operations: ReadonlyDeep<ExpandedOperation>[]}
+>;
+const _addToDataPoint = (
+  prev: DPWithOperations | undefined,
+  operation: ReadonlyDeep<ExpandedOperation>,
+) => {
+  if (operation.result.type === Operation.Type.Checkpoint) {
+    return {
+      actual: operation.result.amount,
+      expected: prev?.expected.sum ?? 0,
+      date: operation.result.date,
+      operations: [operation],
+      uncertainty: 0,
+    };
+  }
+  return {
+    expected:
+      (prev?.actual ?? prev?.expected.sum ?? 0) + operation.result.amount,
+    date: operation.result.date,
+    operations: [operation],
+    uncertainty: operation.result.amount,
+  };
+};
+
 const _accumulateOperations = (
   operations: ReadonlyDeep<ExpandedOperation>[],
 ): DP[] =>
   operations
     .map(op => ({operation: op, code: getDateCode(op.result.date)}))
-    .reduce<Spread<DP, {operations: ReadonlyDeep<ExpandedOperation>[]}>[]>(
-      (acc, {operation, code}) => {
-        const prev = acc.at(-1);
-        const newEntry =
-          operation.result.type === Operation.Type.Checkpoint
-            ? {
-                actual: operation.result.amount,
-                expected: prev?.expected ?? 0,
-                date: operation.result.date,
-                operations: [operation],
-                code: code,
-              }
-            : {
-                expected:
-                  (prev?.actual ?? prev?.expected ?? 0) +
-                  operation.result.amount,
-                date: operation.result.date,
-                operations: [operation],
-                code: code,
-              };
-        if (newEntry.code === prev?.code) {
-          return [
-            ...acc.slice(0, -1),
-            {
-              ...prev,
-              ...newEntry,
-              operations: [...newEntry.operations, ...prev.operations],
+    .reduce<DPWithOperations[]>((acc, {operation, code}) => {
+      const prev = acc.at(-1);
+      const newEntry = _addToDataPoint(prev, operation);
+      if (code === prev?.code) {
+        return [
+          ...acc.slice(0, -1),
+          {
+            ...prev,
+            actual: newEntry.actual,
+            date: newEntry.date,
+            expected: {
+              sum: newEntry.expected,
+              min: prev.expected.min + Math.min(0, newEntry.uncertainty),
+              max: prev.expected.max + Math.max(0, newEntry.uncertainty),
             },
-          ];
-        }
-        return [...acc, {...newEntry}];
-      },
-      [],
-    );
+            code,
+            operations: [...newEntry.operations, ...prev.operations],
+          },
+        ];
+      }
+      return [
+        ...acc,
+        {
+          actual: newEntry.actual,
+          date: newEntry.date,
+          expected: {
+            min:
+              (prev?.actual ?? prev?.expected.sum ?? 0) +
+              Math.min(0, newEntry.uncertainty),
+            max:
+              (prev?.actual ?? prev?.expected.sum ?? 0) +
+              Math.max(0, newEntry.uncertainty),
+            sum: newEntry.expected,
+          },
+          code,
+          operations: newEntry.operations,
+        },
+      ];
+    }, []);
 
 const _computeDataPoints = function* (
   operations: ReadonlyDeep<Operation[]>,
@@ -180,7 +211,14 @@ export namespace TimelineCalculator {
     date: Date;
     code: number;
     operations: ExpandedOperation[];
-    expected: number;
+    expected: {
+      /** The minimum possible that date */
+      min: number;
+      /** The maximum possible that date */
+      max: number;
+      /** The outcome of that date (when all operations are summed up) */
+      sum: number;
+    };
     actual?: number;
   }>;
 }

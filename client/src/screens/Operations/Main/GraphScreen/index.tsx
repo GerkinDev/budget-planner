@@ -98,17 +98,26 @@ function OperationsGraphScreen({
     const newCalculator = TimelineCalculator.for(operations);
     console.log('Date range', dateRange);
     const dataPoints = newCalculator.forRange(dateRange?.[0], dateRange?.[1]);
-    return makeGraph(
-      dataPoints.map(dp => ({
-        date: dp.date,
-        value: dp.expected,
-        checkpointValue: dp.actual,
-        source: dp,
-      })),
-      dateRange,
-      dimensions.graph,
-    );
+    console.log('Will build graph data');
+    try {
+      const graph = makeGraph(
+        dataPoints.map(dp => ({
+          date: dp.date,
+          value: dp.expected,
+          checkpointValue: dp.actual,
+          source: dp,
+        })),
+        dateRange,
+        dimensions.graph,
+      );
+      console.log('Graph data built');
+      return graph;
+    } catch (error) {
+      console.error('Failed to build graph data', error);
+      throw error;
+    }
   }, [operations, dimensions, dateRange]);
+  console.log(graphData);
 
   return (
     <>
@@ -157,9 +166,9 @@ function OperationsGraphScreen({
               <Text style={styles.dotDetailsTableLabelSpecial}>Result</Text>
             </DataTable.Cell>
             <DataTable.Cell numeric>
-              {(selected?.source.expected ?? selected?.source.actual)?.toFixed(
-                2,
-              )}
+              {(
+                selected?.source.expected.sum ?? selected?.source.actual
+              )?.toFixed(2)}
               €
             </DataTable.Cell>
           </DataTable.Row>
@@ -199,7 +208,6 @@ function OperationsGraphScreen({
             <View style={styles.graphContainer}>
               <View style={styles.graphTitleContainer}>
                 <Text style={styles.graphTitleText}>Balance</Text>
-                <Text style={styles.graphTitleText} />
               </View>
               {graphData && (
                 <AmountGraph

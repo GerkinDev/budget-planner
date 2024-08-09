@@ -10,3 +10,4 @@
 - Graph
   - Month per month swipe
   - Memorize time ranges
+  - Band per operation type on unit
